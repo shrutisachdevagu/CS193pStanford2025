@@ -9,16 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack(alignment: .center, content: defaultView)
-    }
-    
-    @ViewBuilder
-    func defaultView()->some View {
-        Image(systemName: "globe")
-            .imageScale(.large)
-            .foregroundStyle(.tint)
-        Text("Hello, world!")
-            .font(.largeTitle)
+        VStack {
+            Image(systemName: "globe")
+            Text("Welcome to CS193p!")
+                .foregroundStyle(.green)
+            Text("Greetings")
+            Circle()
+        }
+        .padding()
+        .font(.largeTitle)
     }
 }
 
