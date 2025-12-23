@@ -25,6 +25,12 @@ struct MatchMarkers: View {
                 matchMarker(peg: 2)
                 matchMarker(peg: 3)
             }
+            if matches.count > 4 {
+                VStack {
+                    matchMarker(peg: 4)
+                    matchMarker(peg: 5)
+                }
+            }
         }
     }
     
@@ -39,5 +45,5 @@ struct MatchMarkers: View {
 }
 
 #Preview {
-    MatchMarkers(matches: [.exact,.inexact,.noMatch,.inexact])
+    MatchMarkers(matches: [.exact,.inexact,.noMatch])
 }
