@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct  CodeBreakerView: View {
-    @State var game = CodeBreaker(pegChoices: [.brown,.yellow,.orange,.black],codeLength: Int.random(in: 3...6))
+    @State var game = CodeBreaker(pegChoices: Bool.random() ? ["➕","🚜","🏀","🌈"] : ["orange","brown","black","yellow"],codeLength: Int.random(in: 3...6))
     var body: some View {
         VStack {
             view(for: game.masterCode)
@@ -37,7 +37,28 @@ struct  CodeBreakerView: View {
     
     var resetButton: some View {
         Button("Restart") {
-            game = CodeBreaker(pegChoices: [.brown,.yellow,.orange,.black],codeLength: Int.random(in: 3...6))
+            game = CodeBreaker(pegChoices: generateRandomPegChoices(),codeLength: Int.random(in: 3...6))
+        }
+    }
+    
+    func color(for peg: Peg)->Color{
+        switch peg {
+        case "yellow":
+                .yellow
+        case "red":
+                .red
+        case "orange":
+                .orange
+        case "black":
+                .black
+        case "brown":
+                .brown
+        case "green":
+                .green
+        case "blue":
+                .blue
+        default:
+                .white
         }
     }
     
@@ -50,10 +71,15 @@ struct  CodeBreakerView: View {
                             RoundedRectangle(cornerRadius: 10)
                                 .strokeBorder(.gray)
                         }
+                        if color(for: code.pegs[index]) == .white {
+                            Text(code.pegs[index])
+                                .font(.system(size: 120))
+                                .minimumScaleFactor(9/120)
+                        }
                     }
                     .contentShape(Rectangle())
                     .aspectRatio(1, contentMode: .fit)
-                    .foregroundStyle(code.pegs [index])
+                    .foregroundStyle(color(for: code.pegs[index]))
                     .onTapGesture {
                         if code.kind == .guess {
                             game.changeGuessPeg(at: index)
@@ -66,6 +92,14 @@ struct  CodeBreakerView: View {
                         guessButton
                     }
                 }
+        }
+    }
+    
+    func generateRandomPegChoices()->[Peg] {
+        if Bool.random() {
+            return ["➕","🚜","🏀","🌈"]
+        } else {
+            return ["orange","brown","black","yellow"]
         }
     }
 }

@@ -5,9 +5,9 @@
 //  Created by Shruti Sachdeva on 29/12/25.
 //
 
-import SwiftUI
+import Foundation
 
-typealias Peg = Color
+typealias Peg = String
 
 struct CodeBreaker {
     var masterCode: Code
@@ -16,7 +16,7 @@ struct CodeBreaker {
     let pegChoices: [Peg]
     let codeLength: Int
     
-    init(pegChoices: [Peg] = [.red,.green,.blue,.yellow],codeLength: Int = 4){
+    init(pegChoices: [Peg] = ["red","green","blue","yellow"],codeLength: Int = 4){
         self.codeLength = codeLength
         self.pegChoices = pegChoices
         self.masterCode = Code(kind: .master, codeLength: codeLength)
@@ -53,7 +53,7 @@ struct Code {
     var kind: Kind
     var codeLength: Int
     var pegs: [Peg]
-    static let missing: Peg = .clear
+    static let missing: Peg = "clear"
     
     init(kind: Kind, codeLength: Int) {
         self.kind = kind
@@ -101,4 +101,3 @@ struct Code {
         return results
     }
 }
-
