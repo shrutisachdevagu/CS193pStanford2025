@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct  CodeBreakerView: View {
-    @State var game = CodeBreaker(pegChoices: [.brown,.yellow,.orange,.black])
+    @State var game = CodeBreaker(pegChoices: [.brown,.yellow,.orange,.black],codeLength: Int.random(in: 3...6))
     var body: some View {
         VStack {
             view(for: game.masterCode)
@@ -18,18 +18,27 @@ struct  CodeBreakerView: View {
                     view(for: game.attempts[index])
                 }
             }
+            resetButton
         }
         .padding()
     }
     
-    var guessButton:some View {
+    var guessButton: some View {
         Button("Guess") {
             withAnimation {
-                game.attemptGuess()
+                if !game.isGuessAlreadyAttempted() && !game.isGuessMissingPegs() {
+                    game.attemptGuess()
+                }
             }
         }
         .font(.system(size: 80))
         .minimumScaleFactor(0.1)
+    }
+    
+    var resetButton: some View {
+        Button("Restart") {
+            game = CodeBreaker(pegChoices: [.brown,.yellow,.orange,.black],codeLength: Int.random(in: 3...6))
+        }
     }
     
     func view(for code: Code) -> some View {

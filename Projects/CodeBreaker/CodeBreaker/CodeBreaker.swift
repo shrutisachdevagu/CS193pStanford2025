@@ -10,14 +10,18 @@ import SwiftUI
 typealias Peg = Color
 
 struct CodeBreaker {
-    var masterCode: Code = Code(kind: .master)
-    var guess: Code = Code(kind: .guess)
+    var masterCode: Code
+    var guess: Code
     var attempts: [Code] = []
     let pegChoices: [Peg]
+    let codeLength: Int
     
-    init(pegChoices: [Peg] = [.red,.green,.blue,.yellow]){
+    init(pegChoices: [Peg] = [.red,.green,.blue,.yellow],codeLength: Int = 4){
+        self.codeLength = codeLength
         self.pegChoices = pegChoices
+        self.masterCode = Code(kind: .master, codeLength: codeLength)
         masterCode.randomize(from: pegChoices)
+        self.guess = Code(kind: .guess, codeLength: codeLength)
         print(masterCode)
     }
     
@@ -36,12 +40,27 @@ struct CodeBreaker {
             guess.pegs[index] = pegChoices.first ?? Code.missing
         }
     }
+    
+    func isGuessAlreadyAttempted()->Bool {
+        return attempts.contains {$0.pegs == guess.pegs}
+    }
+    func isGuessMissingPegs()->Bool {
+        return guess.pegs.contains(Code.missing)
+    }
 }
 
 struct Code {
     var kind: Kind
-    var pegs: [Peg] = Array(repeating: Code.missing, count: 4)
+    var codeLength: Int
+    var pegs: [Peg]
     static let missing: Peg = .clear
+    
+    init(kind: Kind, codeLength: Int) {
+        self.kind = kind
+        self.codeLength = codeLength
+        self.pegs = Array(repeating: Code.missing, count: codeLength)
+    }
+    
     enum Kind: Equatable{
         case master
         case guess
@@ -50,7 +69,7 @@ struct Code {
     }
     
     mutating func randomize(from pegChoices: [Peg]) {
-        for index in pegChoices.indices {
+        for index in 0..<codeLength {
             pegs[index] = pegChoices.randomElement() ?? Code.missing
         }
     }
