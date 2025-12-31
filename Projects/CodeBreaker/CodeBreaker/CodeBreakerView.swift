@@ -8,9 +8,20 @@
 import SwiftUI
 
 struct  CodeBreakerView: View {
-    @State var game = CodeBreaker(pegChoices: Bool.random() ? ["➕","🚜","🏀","🌈"] : ["orange","brown","black","yellow"],codeLength: Int.random(in: 3...6))
+    let themes = [
+        "Standard":["red","green","yellow","blue"],
+        "Sky":["purple","pink","mint","teal"],
+        "Bold":["yellow","brown","orange","black"],
+        "Vehicles":["✈️","🚜","🛵","🛺"],
+        "Fruits":["🍎","🍓","🫐","🍉"],
+        "Faces":["😂","🥳","🫣","😳"]
+    ]
+    @State var game = CodeBreaker(pegChoices: ["🍎","🍓","🫐","🍉"],codeLength: Int.random(in: 3...6))
+    @State var themeName = "Fruits"
     var body: some View {
         VStack {
+            Text(themeName)
+                .font(.largeTitle)
             view(for: game.masterCode)
             ScrollView {
                 view(for: game.guess )
@@ -21,6 +32,9 @@ struct  CodeBreakerView: View {
             resetButton
         }
         .padding()
+        .onAppear {
+            game = CodeBreaker(pegChoices: generateRandomPegChoices(),codeLength: Int.random(in: 3...6))
+        }
     }
     
     var guessButton: some View {
@@ -41,27 +55,6 @@ struct  CodeBreakerView: View {
         }
     }
     
-    func color(for peg: Peg)->Color{
-        switch peg {
-        case "yellow":
-                .yellow
-        case "red":
-                .red
-        case "orange":
-                .orange
-        case "black":
-                .black
-        case "brown":
-                .brown
-        case "green":
-                .green
-        case "blue":
-                .blue
-        default:
-                .white
-        }
-    }
-    
     func view(for code: Code) -> some View {
         HStack {
             ForEach(code.pegs.indices, id: \.self ){ index in
@@ -71,7 +64,7 @@ struct  CodeBreakerView: View {
                             RoundedRectangle(cornerRadius: 10)
                                 .strokeBorder(.gray)
                         }
-                        if color(for: code.pegs[index]) == .white {
+                        if Color(name: code.pegs[index]) == nil {
                             Text(code.pegs[index])
                                 .font(.system(size: 120))
                                 .minimumScaleFactor(9/120)
@@ -79,7 +72,7 @@ struct  CodeBreakerView: View {
                     }
                     .contentShape(Rectangle())
                     .aspectRatio(1, contentMode: .fit)
-                    .foregroundStyle(color(for: code.pegs[index]))
+                    .foregroundStyle(Color(name: code.pegs[index]) ?? .white)
                     .onTapGesture {
                         if code.kind == .guess {
                             game.changeGuessPeg(at: index)
@@ -96,14 +89,46 @@ struct  CodeBreakerView: View {
     }
     
     func generateRandomPegChoices()->[Peg] {
-        if Bool.random() {
-            return ["➕","🚜","🏀","🌈"]
-        } else {
-            return ["orange","brown","black","yellow"]
-        }
+        themeName = themes.keys.randomElement()!
+        return themes[themeName]!
     }
 }
 
 #Preview {
     CodeBreakerView()
+}
+
+
+extension Color {
+    /// Dictionary mapping color names to SwiftUI Colors
+    private static let nameToColor:[String : Color] = [
+        "black": .black,
+        "white": .white,
+        "gray": .gray,
+        "red": .red,
+        "green": .green,
+        "blue": .blue,
+        "orange": .orange,
+        "yellow": .yellow,
+        "pink": .pink,
+        "purple": .purple,
+        "brown": .brown,
+        "cyan": .cyan,
+        "mint": .mint,
+        "indigo": .indigo,
+        "teal": .teal,
+        "clear": .clear
+    ]
+    /// Failable initializer that creates a Color from its name
+    init?(name:String) {
+        let lowercased = name.lowercased()
+        guard let color = Color.nameToColor[lowercased] else {
+            return nil
+        }
+        self = color
+    }
+    /// Inverse lookup: returns the name of the color if known
+    var name:String? {
+        Color.nameToColor.first {$0.value == self}?.key
+    }
 }
