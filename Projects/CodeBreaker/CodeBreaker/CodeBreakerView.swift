@@ -84,14 +84,14 @@ struct  CodeBreakerView: View {
                 .aspectRatio(1, contentMode: .fit)
                 .overlay {
                     if let matches = code.matches {
-                        MatchMarkers(matches:  matches)
+                        MatchMarkers(matches: matches )
                     } else {
                         if code.kind == .guess {
                             guessButton
                         }
                     }
-                 }
-        }
+                }
+         }
     }
     
     func generateRandomPegChoices()->[Peg] {
