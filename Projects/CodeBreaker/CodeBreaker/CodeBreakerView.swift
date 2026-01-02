@@ -9,14 +9,14 @@ import SwiftUI
 
 struct  CodeBreakerView: View {
     let themes = [
-        "Standard":["red","green","yellow","blue"],
-        "Sky":["purple","pink","mint","teal"],
-        "Bold":["yellow","brown","orange","black"],
-        "Vehicles":["✈️","🚜","🛵","🛺"],
-        "Fruits":["🍎","🍓","🫐","🍉"],
-        "Faces":["😂","🥳","🫣","😳"]
+        "Standard" : ["red", "green", "yellow", "blue"],
+        "Sky" : ["purple", "pink", "mint", "teal"],
+        "Bold" : ["yellow", "brown", "orange", "black"],
+        "Vehicles" : ["✈️", "🚜", "🛵", "🛺"],
+        "Fruits" : ["🍎", "🍓", "🫐", "🍉"],
+        "Faces" : ["😂", "🥳", "🫣", "😳"]
     ]
-    @State var game = CodeBreaker(pegChoices: ["🍎","🍓","🫐","🍉"],codeLength: Int.random(in: 3...6))
+    @State var game = CodeBreaker(pegChoices: ["🍎", "🍓", "🫐", "🍉"],codeLength: Int.random(in: 3...6))
     @State var themeName = "Fruits"
     var body: some View {
         VStack {
