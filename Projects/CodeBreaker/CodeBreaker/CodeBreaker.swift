@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 typealias Peg = String
 
 struct CodeBreaker {
@@ -37,7 +38,7 @@ struct CodeBreaker {
             let newPeg = pegChoices[(indexOfExisingPegInPegChoices + 1) % pegChoices.count]
             guess.pegs[index] = newPeg
         } else {
-            guess.pegs[index] = pegChoices.first ?? Code.missing
+            guess.pegs[index] = pegChoices.first ?? Code.missingPeg
         }
     }
     
@@ -45,7 +46,7 @@ struct CodeBreaker {
         return attempts.contains {$0.pegs == guess.pegs}
     }
     func isGuessMissingPegs()->Bool {
-        return guess.pegs.contains(Code.missing)
+        return guess.pegs.contains(Code.missingPeg)
     }
 }
 
