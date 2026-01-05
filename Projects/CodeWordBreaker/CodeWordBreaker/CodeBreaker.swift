@@ -1,0 +1,72 @@
+//
+//  CodeBreaker.swift
+//  CodeWordBreaker
+//
+//  Created by Shruti Sachdeva on 05/01/26.
+//
+
+import Foundation
+
+
+typealias Peg = String
+
+struct CodeBreaker {
+    var codeLength: Int
+    var masterCode: Code
+    var guess: Code
+    var attempts: [Code] = []
+    let pegChoices: [Peg]
+    
+    static var dummyCode: Code {
+        var someCode = Code(kind: .unknown, codeLength: 4)
+        someCode.pegs = "DUMMY".map{String($0)}
+        return someCode
+    }
+        
+    init(codeLength: Int = 5){
+        self.codeLength = codeLength
+        self.pegChoices = "QWERTYUIOPASDFGHJKLZXCVBNM".map { String($0) }
+        self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
+        self.guess = Code(kind: .guess, codeLength: codeLength)
+        print("Code breaker initializer called and set the master code as \(masterCode)")
+    }
+    
+    var isOver: Bool {
+        attempts.last?.pegs ==  masterCode.pegs
+    }
+    
+    mutating func attemptGuess(){
+        var attempt = guess
+        attempt.kind = .attempt(guess.match(against: masterCode))
+        attempts.append(attempt)
+        guess.reset()
+        if isOver {
+            masterCode.kind = .master(isHidden: false)
+        }
+    }
+    
+    mutating func setGuessPeg(_ peg: Peg, at index: Int) {
+        guard guess.pegs.indices.contains(index) else { return }
+        guess.pegs[index] = peg
+    }
+    
+    mutating func changeGuessPeg(at index: Int) {
+        let existingPeg = guess.pegs[index]
+        if let indexOfExisingPegInPegChoices = pegChoices.firstIndex(of: existingPeg) {
+            let newPeg = pegChoices[(indexOfExisingPegInPegChoices + 1) % pegChoices.count]
+            guess.pegs[index] = newPeg
+        } else {
+            guess.pegs[index] = pegChoices.first ?? Code.missingPeg
+        }
+    }
+    
+    func isGuessAlreadyAttempted()->Bool {
+        return attempts.contains {$0.pegs == guess.pegs}
+    }
+    
+    func isGuessMissingPegs()->Bool {
+        return guess.pegs.contains(Code.missingPeg)
+    }
+}
+
+
