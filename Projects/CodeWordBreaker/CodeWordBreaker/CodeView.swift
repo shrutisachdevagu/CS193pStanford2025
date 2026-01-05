@@ -21,7 +21,19 @@ struct CodeView: View {
                 PegView(peg: code.pegs[index])
                     .padding(Selection.border)
                     .background {
-                        if selection == index && code.kind == .guess {
+                        if let matches = code.matches {
+                            if matches[index] == .exact {
+                                Selection.shape
+                                    .foregroundStyle(Color.green.opacity(0.3))
+                            } else if matches[index] == .inexact {
+                                Selection.shape
+                                    .foregroundStyle(Color.yellow.opacity(0.3))
+                            } else {
+                                Selection.shape
+                                    .foregroundStyle(Color.black.opacity(0.3))
+                            }
+                        }
+                        else if selection == index && code.kind == .guess {
                             Selection.shape
                                 .foregroundStyle(Selection.color.opacity(0.3))
                         } else {
