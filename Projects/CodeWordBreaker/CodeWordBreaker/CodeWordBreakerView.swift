@@ -49,6 +49,7 @@ struct  CodeWordBreakerView: View {
                 } else {
                     game.masterCode.word = words.random(length: 5) ?? "ERROR"
                 }
+                print("Master code is \(game.masterCode.word)")
             }
         }
         .padding()
