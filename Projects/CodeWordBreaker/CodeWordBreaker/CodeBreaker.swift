@@ -26,7 +26,7 @@ struct CodeBreaker {
     init(codeLength: Int = 5){
         self.codeLength = codeLength
         self.pegChoices = "QWERTYUIOPASDFGHJKLZXCVBNM".map { String($0) }
-        self.masterCode = Code(kind: .master(isHidden: false), codeLength: codeLength)
+        self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
         self.guess = Code(kind: .guess, codeLength: codeLength)
     }
     

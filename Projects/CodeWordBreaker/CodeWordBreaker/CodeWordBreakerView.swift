@@ -67,6 +67,7 @@ struct  CodeWordBreakerView: View {
                 }
                 if !checker.isAWord(game.guess.word.lowercased()){
                     game.guess.reset()
+                    selection = 0
                 }
             }
         }
@@ -76,6 +77,7 @@ struct  CodeWordBreakerView: View {
         Button("Restart") {
             game = CodeBreaker(codeLength: Int.random(in: 3...6))
             game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map{String($0)}
+            selection = 0
             print("Master code is :\(game.masterCode.word)")
         }
     }

@@ -18,29 +18,8 @@ struct CodeView: View {
     var body: some View {
         HStack {
             ForEach(code.pegs.indices, id: \.self ){ index in
-                PegView(peg: code.pegs[index])
+                PegView(peg: code.pegs[index], pegType: getPegTypeFromCodeAt(index: index))
                     .padding(Selection.border)
-                    .background {
-                        if let matches = code.matches {
-                            if matches[index] == .exact {
-                                Selection.shape
-                                    .foregroundStyle(Color.green.opacity(0.3))
-                            } else if matches[index] == .inexact {
-                                Selection.shape
-                                    .foregroundStyle(Color.yellow.opacity(0.3))
-                            } else {
-                                Selection.shape
-                                    .foregroundStyle(Color.black.opacity(0.3))
-                            }
-                        }
-                        else if selection == index && code.kind == .guess {
-                            Selection.shape
-                                .foregroundStyle(Selection.color.opacity(0.3))
-                        } else {
-                            Selection.shape
-                                .foregroundStyle(Color.pink.opacity(0.3))
-                        }
-                    }
                     .overlay {
                         Selection.shape.foregroundStyle(code.isHidden ? .gray : .clear)
                     }
@@ -51,13 +30,33 @@ struct CodeView: View {
                     }
             }
         }
-     }
+    }
     
     struct Selection {
         static let border: CGFloat = 5
         static let cornerRadius: CGFloat = 10
         static let color : Color = Color.blue
         static let shape = RoundedRectangle(cornerRadius:  cornerRadius)
+    }
+    
+    func getPegTypeFromCodeAt(index:Int) -> PegType {
+        switch code.kind {
+        case .master(let isHidden):
+            return isHidden ? .hiddenMasterCodePeg : .unhiddenMasterCodePeg
+        case .guess:
+            return selection == index ? .selectedGuessPeg : .none
+        case .attempt(let array):
+            switch array[index] {
+            case .exact:
+                return .exactMatchAttemptPeg
+            case .inexact:
+                return .inexactMatchAttemptPeg
+            case .noMatch:
+                return .noMatchAttemptPeg
+            }
+        case .unknown:
+            return .none
+        }
     }
 }
 

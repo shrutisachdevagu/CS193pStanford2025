@@ -23,7 +23,7 @@ struct PegChooser: View {
                     Button {
                         onChoose?(peg)
                     } label: {
-                        PegView(peg: peg)
+                        PegView(peg: peg,pegType: .pegChoice)
                     }
                 }
             }
@@ -33,7 +33,7 @@ struct PegChooser: View {
                     Button {
                         onChoose?(peg)
                     } label: {
-                        PegView(peg: peg)
+                        PegView(peg: peg, pegType: .pegChoice)
                     }
                 }
             }
@@ -43,7 +43,7 @@ struct PegChooser: View {
                     Button {
                         onChoose?(peg)
                     } label: {
-                        PegView(peg: peg)
+                        PegView(peg: peg, pegType: .pegChoice)
                     }
                 }
             }
