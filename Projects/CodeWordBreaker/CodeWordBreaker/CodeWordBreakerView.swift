@@ -15,6 +15,7 @@ struct  CodeWordBreakerView: View {
     // MARK: Data Owned by me
     @State private var game = CodeBreaker()
     @State private var selection: Int = 0
+    @State private var checker = UITextChecker()
     
     // MARK: - Body
     
@@ -57,10 +58,15 @@ struct  CodeWordBreakerView: View {
     
     var guessButton: some View {
         Button("Guess") {
+            print("Guess is \(game.guess.word) and \(checker.isAWord(game.guess.word.lowercased()) ? "its" : "its not") a valid word")
+            
             withAnimation {
-                if !game.isGuessAlreadyAttempted() && !game.isGuessMissingPegs() {
+                if !game.isGuessAlreadyAttempted() && !game.isGuessMissingPegs() && checker.isAWord(game.guess.word.lowercased()){
                     game.attemptGuess()
                     selection = 0
+                }
+                if !checker.isAWord(game.guess.word.lowercased()){
+                    game.guess.reset()
                 }
             }
         }
