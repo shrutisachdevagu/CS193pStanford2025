@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CodeView<AncillaryView>: View where AncillaryView:View{
+struct CodeView<AncillaryView>: View where AncillaryView: View{
     // MARK: Data In
     let code: Code
     
