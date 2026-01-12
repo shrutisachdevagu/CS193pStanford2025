@@ -20,7 +20,7 @@ struct CodeView: View {
             ForEach(code.pegs.indices, id: \.self ){ index in
                 PegView(peg: code.pegs[index], pegType: getPegTypeFromCodeAt(index: index))
                     .padding(Selection.border)
-                    .overlay {
+                    .overlay { //obscuring code
                         Selection.shape.foregroundStyle(code.isHidden ? .gray : .clear)
                     }
                     .onTapGesture {
@@ -44,7 +44,7 @@ struct CodeView: View {
         case .master(let isHidden):
             return isHidden ? .hiddenMasterCodePeg : .unhiddenMasterCodePeg
         case .guess:
-            return selection == index ? .selectedGuessPeg : .none
+            return selection == index ? .selectedGuessPeg : .unselectedGuessPeg
         case .attempt(let array):
             switch array[index] {
             case .exact:

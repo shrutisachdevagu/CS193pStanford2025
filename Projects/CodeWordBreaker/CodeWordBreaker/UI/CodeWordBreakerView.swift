@@ -24,7 +24,7 @@ struct  CodeWordBreakerView: View {
             view(for: game.masterCode)
             ScrollView {
                 if !game.isOver {
-                    view(for: game.guess )
+                    view(for: game.guess)
                 }
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                     view(for: game.attempts[index])
@@ -86,8 +86,7 @@ struct  CodeWordBreakerView: View {
     
     func view(for code: Code) -> some View {
         HStack {
-            CodeView(code: code,selection: $selection)
-
+            CodeView(code: code, selection: $selection)
         }
     }
 }

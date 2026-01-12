@@ -18,7 +18,7 @@ struct CodeBreaker {
     let pegChoices: [Peg]
     
     static var dummyCode: Code {
-        var someCode = Code(kind: .unknown, codeLength: 4)
+        var someCode = Code(kind: .guess, codeLength: 4)
         someCode.pegs = "DUMMY".map{String($0)}
         return someCode
     }

@@ -7,6 +7,7 @@
 
 enum PegType {
     case selectedGuessPeg
+    case unselectedGuessPeg
     case hiddenMasterCodePeg
     case unhiddenMasterCodePeg
     case exactMatchAttemptPeg
@@ -21,6 +22,8 @@ enum PegType {
             return .green
         case .selectedGuessPeg:
             return .blue
+        case .unselectedGuessPeg:
+            return .gray.opacity(0.5)
         case .hiddenMasterCodePeg:
             return .clear
         case .unhiddenMasterCodePeg:
