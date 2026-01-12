@@ -24,7 +24,7 @@ struct PegChooser: View {
                     }
                 }
             }
-            .aspectRatio(20/3, contentMode: .fit)
+            .aspectRatio(10/3, contentMode: .fit)
             HStack {
                 ForEach(KeyboardKeys.row2, id: \.self) { peg in
                     Button {
@@ -34,8 +34,11 @@ struct PegChooser: View {
                     }
                 }
             }
-            .aspectRatio(20/3, contentMode: .fit)
+            .aspectRatio(10/3, contentMode: .fit)
             HStack {
+                PegView(peg: "", pegType: .none)
+                PegView(peg: "", pegType: .none)
+
                 ForEach(KeyboardKeys.row3, id: \.self) { peg in
                     Button {
                         onChoose?(peg)
@@ -43,8 +46,11 @@ struct PegChooser: View {
                         PegView(peg: peg, pegType: .pegChoice)
                     }
                 }
+                PegView(peg: "", pegType: .none)
+                PegView(peg: "", pegType: .none)
+
             }
-            .aspectRatio(2/3, contentMode: .fit)
+            .aspectRatio(10/3, contentMode: .fit)
         }
     }
 

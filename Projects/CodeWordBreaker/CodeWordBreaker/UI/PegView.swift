@@ -32,7 +32,7 @@ enum PegType {
         case .pegChoice:
             return .clear
         case .none:
-            return .gray
+            return .clear
         }
     }
 }
