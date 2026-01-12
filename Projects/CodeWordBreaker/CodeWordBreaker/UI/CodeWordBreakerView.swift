@@ -60,7 +60,7 @@ struct  CodeWordBreakerView: View {
         Button("Guess") {
             print("Guess is \(game.guess.word) and \(checker.isAWord(game.guess.word.lowercased()) ? "its" : "its not") a valid word")
             
-            withAnimation {
+            withAnimation(.codeBreakerFast) {
                 if !game.isGuessAlreadyAttempted() && !game.isGuessMissingPegs() && checker.isAWord(game.guess.word.lowercased()){
                     game.attemptGuess()
                     selection = 0
@@ -75,10 +75,12 @@ struct  CodeWordBreakerView: View {
     
     var resetButton: some View {
         Button("Restart") {
-            game.restart()
-            game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
-            selection = 0
-            print("Master code is :\(game.masterCode.word)")
+            withAnimation(.codeBreakerFast) {
+                game.restart()
+                game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
+                selection = 0
+                print("Master code is :\(game.masterCode.word)")
+            }
         }
     }
     
