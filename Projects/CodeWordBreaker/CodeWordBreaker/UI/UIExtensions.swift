@@ -9,5 +9,5 @@ import SwiftUI
 
 extension Animation {
     static let codeBreakerFast = Animation.easeInOut
-    static let codeBreakerSlow = Animation.easeInOut(duration: 3)
+    static let codeBreakerSlow = Animation.easeInOut(duration: 5)
 }

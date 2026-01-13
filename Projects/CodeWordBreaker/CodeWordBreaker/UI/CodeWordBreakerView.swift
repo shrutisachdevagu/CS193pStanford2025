@@ -16,12 +16,15 @@ struct  CodeWordBreakerView: View {
     @State private var game = CodeBreaker()
     @State private var selection: Int = 0
     @State private var checker = UITextChecker()
+//    @State private var tempStatus = ""
     
     // MARK: - Body
     
     var body: some View {
         VStack {
             view(for: game.masterCode)
+                .animation(nil, value: game.codeLength)
+
             ScrollView {
                 if !game.isOver {
                     view(for: game.guess)
@@ -34,6 +37,7 @@ struct  CodeWordBreakerView: View {
                 resetButton
                 Spacer()
                 guessButton
+                    .disabled(game.isOver)
             }
             .padding()
             .buttonStyle(.bordered)
@@ -41,7 +45,7 @@ struct  CodeWordBreakerView: View {
                 game.setGuessPeg(peg, at: selection)
                 selection = (selection + 1) % game.codeLength
             }
-            
+            .disabled(game.isOver)
         }
         .onChange(of: words.count, initial: true) {
             if game.attempts.count == 0 { // don’t disrupt a game in progress
@@ -53,6 +57,7 @@ struct  CodeWordBreakerView: View {
                 print("Master code is \(game.masterCode.word)")
             }
         }
+        
         .padding()
     }
     
@@ -60,7 +65,7 @@ struct  CodeWordBreakerView: View {
         Button("Guess") {
             print("Guess is \(game.guess.word) and \(checker.isAWord(game.guess.word.lowercased()) ? "its" : "its not") a valid word")
             
-            withAnimation(.codeBreakerFast) {
+            withAnimation(.codeBreakerSlow) {
                 if !game.isGuessAlreadyAttempted() && !game.isGuessMissingPegs() && checker.isAWord(game.guess.word.lowercased()){
                     game.attemptGuess()
                     selection = 0
@@ -75,7 +80,7 @@ struct  CodeWordBreakerView: View {
     
     var resetButton: some View {
         Button("Restart") {
-            withAnimation(.codeBreakerFast) {
+            withAnimation(.codeBreakerSlow) {
                 game.restart()
                 game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
                 selection = 0

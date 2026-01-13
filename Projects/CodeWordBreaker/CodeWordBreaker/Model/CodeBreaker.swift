@@ -18,7 +18,7 @@ struct CodeBreaker {
     let pegChoices: [Peg]
     
     static var dummyCode: Code {
-        var someCode = Code(kind: .guess, codeLength: 4)
+        var someCode = Code(kind: .guess, codeLength: 5)
         someCode.pegs = "DUMMY".map{String($0)}
         return someCode
     }
@@ -69,6 +69,7 @@ struct CodeBreaker {
     
     mutating func restart() {
         self.codeLength = Int.random(in: 3...6)
+//        self.codeLength = 5
         self.attempts.removeAll()
         self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
         self.guess = Code(kind: .guess, codeLength: codeLength)

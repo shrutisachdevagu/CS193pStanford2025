@@ -23,7 +23,7 @@ enum PegType {
         case .selectedGuessPeg:
             return .blue
         case .unselectedGuessPeg:
-            return .gray.opacity(0.5)
+            return .gray.opacity(0.01)
         case .hiddenMasterCodePeg:
             return .clear
         case .unhiddenMasterCodePeg:
@@ -47,8 +47,10 @@ struct PegView: View {
     let peg: Peg
     let pegType: PegType
     
-    // MARK: - Body
+    // MARK: Data owned by me
     let pegShape = RoundedRectangle(cornerRadius: 7)
+    
+    // MARK: - Body
     
     var body: some View {
         pegShape
@@ -62,6 +64,16 @@ struct PegView: View {
             .background {
                 RoundedRectangle(cornerRadius: 7)
                     .fill(pegType.colorForPegType().opacity(0.3))
+            }
+            .padding(pegType == .unselectedGuessPeg ? 5 : 0)
+            .overlay {
+                Group {
+                    if pegType == .hiddenMasterCodePeg {
+                        RoundedRectangle(cornerRadius: 7)
+                            .fill(.gray)
+                    }
+                }
+                .animation(nil, value: pegType)
             }
         }
 }

@@ -14,20 +14,28 @@ struct CodeView: View {
     // MARK: Data Shared with Me
     @Binding var selection: Int
     
+    // MARK: Data owned by me
+    @Namespace private var selectionNamespace
+    
     // MARK: - Body
     var body: some View {
         HStack {
             ForEach(code.pegs.indices, id: \.self ){ index in
                 PegView(peg: code.pegs[index], pegType: getPegTypeFromCodeAt(index: index))
-                    .padding(Selection.border)
-                    .overlay { //obscuring code
-                        Selection.shape.foregroundStyle(code.isHidden ? .gray : .clear)
+                    .overlay {
+                        if code.kind == .guess {
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(.clear)
+                                .matchedGeometryEffect(id: "selection", in: selectionNamespace)
+                        }
                     }
+                    .padding(Selection.border)
                     .onTapGesture {
                         if code.kind == .guess {
                             selection = index
                         }
                     }
+                    
             }
         }
     }
