@@ -20,7 +20,7 @@ struct PegChooser: View {
                     Button {
                         onChoose?(peg)
                     } label: {
-                        PegView(peg: peg,pegType: .pegChoice)
+                        PegView(peg: peg,pegType: .pegChoicePeg)
                     }
                 }
             }
@@ -30,24 +30,24 @@ struct PegChooser: View {
                     Button {
                         onChoose?(peg)
                     } label: {
-                        PegView(peg: peg, pegType: .pegChoice)
+                        PegView(peg: peg, pegType: .pegChoicePeg)
                     }
                 }
             }
             .aspectRatio(10/3, contentMode: .fit)
             HStack {
-                PegView(peg: "", pegType: .none)
-                PegView(peg: "", pegType: .none)
+                PegView(peg: "", pegType: .neutralPeg)
+                PegView(peg: "", pegType: .neutralPeg)
 
                 ForEach(KeyboardKeys.row3, id: \.self) { peg in
                     Button {
                         onChoose?(peg)
                     } label: {
-                        PegView(peg: peg, pegType: .pegChoice)
+                        PegView(peg: peg, pegType: .pegChoicePeg)
                     }
                 }
-                PegView(peg: "", pegType: .none)
-                PegView(peg: "", pegType: .none)
+                PegView(peg: "", pegType: .neutralPeg)
+                PegView(peg: "", pegType: .neutralPeg)
 
             }
             .aspectRatio(10/3, contentMode: .fit)

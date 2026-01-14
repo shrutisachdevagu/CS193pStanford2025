@@ -42,20 +42,13 @@ struct CodeView: View {
     func getPegTypeFromCodeAt(index:Int) -> PegType {
         switch code.kind {
         case .master(let isHidden):
-            return isHidden ? .hiddenMasterCodePeg : .unhiddenMasterCodePeg
+            return .masterPeg(isHidden: isHidden)
         case .guess:
-            return selection == index ? .selectedGuessPeg : .unselectedGuessPeg
-        case .attempt(let array):
-            switch array[index] {
-            case .exact:
-                return .exactMatchAttemptPeg
-            case .inexact:
-                return .inexactMatchAttemptPeg
-            case .noMatch:
-                return .noMatchAttemptPeg
-            }
+            return .guessPeg(isSelected: selection == index)
+        case .attempt(let matches):
+            return .attemptPeg(matchType: matches[index])
         case .unknown:
-            return .none
+            return .neutralPeg
         }
     }
 }
