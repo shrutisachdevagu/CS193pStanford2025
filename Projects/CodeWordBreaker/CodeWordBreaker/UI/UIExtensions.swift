@@ -14,9 +14,9 @@ extension Color {
     static let selectedGuessPegColor = Color.blue.opacity(0.3)
     static let unselectedGuessPegColor = Color.gray.opacity(0.02)
     static let hiddenMasterPegColor = Color.gray
-    static let unhiddenMasterPegColor = Color.pink.opacity(0.3)
+    static let unhiddenMasterPegColor = Color.purple.opacity(0.3)
     static let pegChoicePegColor = Color.white
-    static let neutralPegColor = Color.cyan
+    static let neutralPegColor = Color.white
 }
 
 
