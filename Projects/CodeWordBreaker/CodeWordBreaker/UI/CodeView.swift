@@ -28,7 +28,6 @@ struct CodeView: View {
                             selection = index
                         }
                     }
-                    
             }
         }
     }

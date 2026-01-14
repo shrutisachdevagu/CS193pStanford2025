@@ -73,7 +73,6 @@ struct PegView: View {
                             .fill(.gray)
                     }
                 }
-                .animation(nil, value: pegType)
             }
         }
 }
