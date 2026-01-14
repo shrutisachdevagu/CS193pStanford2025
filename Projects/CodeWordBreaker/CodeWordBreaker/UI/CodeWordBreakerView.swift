@@ -32,6 +32,7 @@ struct  CodeWordBreakerView: View {
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                     view(for: game.attempts[index])
                 }
+                .transition(AnyTransition.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .trailing)))
             }
             HStack {
                 resetButton

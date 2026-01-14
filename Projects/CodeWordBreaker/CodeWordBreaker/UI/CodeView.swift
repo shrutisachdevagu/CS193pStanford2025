@@ -22,13 +22,6 @@ struct CodeView: View {
         HStack {
             ForEach(code.pegs.indices, id: \.self ){ index in
                 PegView(peg: code.pegs[index], pegType: getPegTypeFromCodeAt(index: index))
-                    .overlay {
-                        if code.kind == .guess {
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(.clear)
-                                .matchedGeometryEffect(id: "selection", in: selectionNamespace)
-                        }
-                    }
                     .padding(Selection.border)
                     .onTapGesture {
                         if code.kind == .guess {
