@@ -5,6 +5,45 @@
 //  Created by Shruti Sachdeva on 05/01/26.
 //
 
+import SwiftUI
+
+struct PegView: View {
+    // MARK: Data In
+    let peg: Peg
+    let pegType: PegType
+    
+    // MARK: Data owned by me
+    let pegShape = RoundedRectangle(cornerRadius: 7)
+    
+    // MARK: - Body
+    
+    var body: some View {
+        pegShape
+            .stroke(.clear)
+            .padding()
+            .aspectRatio(1, contentMode: .fit)
+            .overlay {
+                Text(peg)
+                    .font(.title)
+            }
+            .background { // type of pegs - attempt, guess, selection
+                RoundedRectangle(cornerRadius: 7)
+                    .fill(pegType.colorForPegType())
+            }
+            .overlay { // hidding master code
+                if pegType == .masterPeg(isHidden: true) {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(pegType.colorForPegType())
+                }
+            }
+    }
+}
+
+#Preview {
+    PegView(peg: "R", pegType: .masterPeg(isHidden: true))
+        .padding()
+}
+
 enum PegType: Equatable {
     case guessPeg(isSelected: Bool)
     case attemptPeg(matchType: Match)
@@ -45,41 +84,4 @@ enum PegType: Equatable {
     }
 }
 
-import SwiftUI
 
-struct PegView: View {
-    // MARK: Data In
-    let peg: Peg
-    let pegType: PegType
-    
-    // MARK: Data owned by me
-    let pegShape = RoundedRectangle(cornerRadius: 7)
-    
-    // MARK: - Body
-    
-    var body: some View {
-        pegShape
-            .stroke(.clear)
-            .padding()
-            .aspectRatio(1, contentMode: .fit)
-            .overlay {
-                Text(peg)
-                    .font(.title)
-            }
-            .background { // type of pegs - attempt, guess, selection
-                RoundedRectangle(cornerRadius: 7)
-                    .fill(pegType.colorForPegType())
-            }
-            .overlay { // hidding master code
-                if pegType == .masterPeg(isHidden: true) {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(pegType.colorForPegType())
-                }
-            }
-    }
-}
-
-#Preview {
-    PegView(peg: "R", pegType: .masterPeg(isHidden: true))
-        .padding()
-}

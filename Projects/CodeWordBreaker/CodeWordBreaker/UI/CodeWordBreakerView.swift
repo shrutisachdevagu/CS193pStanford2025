@@ -18,11 +18,10 @@ struct  CodeWordBreakerView: View {
     @State private var checker = UITextChecker()
     
     // MARK: - Body
-    
+        
     var body: some View {
         VStack {
             view(for: game.masterCode)
-            
             ScrollView {
                 if !game.isOver {
                     view(for: game.guess)
@@ -31,18 +30,13 @@ struct  CodeWordBreakerView: View {
                     view(for: game.attempts[index])
                 }
             }
-            HStack {
-                resetButton
-                Spacer()
-                guessButton
-                    .disabled(game.isOver)
-            }
+            resetButton
             .padding()
             .buttonStyle(.bordered)
             PegChooser { peg in
                 game.setGuessPeg(peg, at: selection)
                 selection = (selection + 1) % game.codeLength
-            }
+            } onDelete: { deleteSelectedCharacterFromGuess() } onGuess: { guessWord() }
             .disabled(game.isOver)
         }
         .onChange(of: words.count, initial: true) {
@@ -58,27 +52,37 @@ struct  CodeWordBreakerView: View {
         
         .padding()
     }
-    
-    var guessButton: some View {
-        Button("Guess") {
-            print("Guess is \(game.guess.word) and \(checker.isAWord(game.guess.word.lowercased()) ? "its" : "its not") a valid word")
-            if !game.isGuessAlreadyAttempted() && !game.isGuessMissingPegs() && checker.isAWord(game.guess.word.lowercased()){
-                game.attemptGuess()
-                selection = 0
-            }
-            if !checker.isAWord(game.guess.word.lowercased()){
-                game.guess.reset()
-                selection = 0
-            }
-        }
-    }
-    
+
     var resetButton: some View {
         Button("Restart") {
             game.restart()
             game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
             selection = 0
             print("Master code is :\(game.masterCode.word)")
+        }
+    }
+    
+    fileprivate func deleteSelectedCharacterFromGuess() {
+        if game.guess.pegs[selection] != "" {
+            game.resetGuessPeg(at: selection)
+        }
+        else if selection > 0 {
+            selection = (selection - 1) % game.codeLength
+            game.resetGuessPeg(at: selection)
+        } else {
+            selection = game.codeLength - 1
+            game.resetGuessPeg(at: selection)
+        }
+    }
+    fileprivate func guessWord() {
+        print("Guess is \(game.guess.word) and \(checker.isAWord(game.guess.word.lowercased()) ? "its" : "its not") a valid word")
+        if !game.isGuessAlreadyAttempted() && !game.isGuessMissingPegs() && checker.isAWord(game.guess.word.lowercased()){
+            game.attemptGuess()
+            selection = 0
+        }
+        if !checker.isAWord(game.guess.word.lowercased()){
+            game.guess.reset()
+            selection = 0
         }
     }
     
