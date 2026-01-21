@@ -17,6 +17,10 @@ extension Color {
     static let unhiddenMasterPegColor = Color.purple.opacity(0.3)
     static let pegChoicePegColor = Color.white
     static let neutralPegColor = Color.white
+    
+    static let unmatchAttemptPegChoiceColor = Color.red
+    static let exactMatchAttemptPegChoiceColor = Color.green
+    static let inexactMatchAttemptPegChoiceColor = Color.yellow
 }
 
 

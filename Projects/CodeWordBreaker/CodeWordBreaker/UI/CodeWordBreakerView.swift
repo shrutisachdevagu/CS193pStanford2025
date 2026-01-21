@@ -33,7 +33,7 @@ struct  CodeWordBreakerView: View {
             resetButton
             .padding()
             .buttonStyle(.bordered)
-            PegChooser { peg in
+            PegChooser(pegChoiceStatuses: game.pegChoiceStatuses) { peg in
                 game.setGuessPeg(peg, at: selection)
                 selection = (selection + 1) % game.codeLength
             } onDelete: { deleteSelectedCharacterFromGuess() } onGuess: { guessWord() }

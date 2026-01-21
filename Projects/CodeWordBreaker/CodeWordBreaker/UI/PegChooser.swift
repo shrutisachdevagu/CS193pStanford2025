@@ -9,6 +9,9 @@ import SwiftUI
 
 struct PegChooser: View {
     
+    // MARK: Data In
+    let pegChoiceStatuses: [Peg: Match?]
+    
     // MARK: Data Out Function
     let onChoose: ((Peg) -> Void)?
     let onDelete: (() -> Void)?
@@ -31,6 +34,7 @@ struct PegChooser: View {
                 } label: {
                     PegView(peg: peg,pegType: .pegChoicePeg)
                 }
+                .foregroundStyle(colorFor(peg: peg))
             }
         }
         .aspectRatio(10/3, contentMode: .fit)
@@ -44,6 +48,7 @@ struct PegChooser: View {
                 } label: {
                     PegView(peg: peg, pegType: .pegChoicePeg)
                 }
+                .foregroundStyle(colorFor(peg: peg))
             }
         }
         .aspectRatio(10/3, contentMode: .fit)
@@ -59,6 +64,7 @@ struct PegChooser: View {
                 } label: {
                     PegView(peg: peg, pegType: .pegChoicePeg)
                 }
+                .foregroundStyle(colorFor(peg: peg))
             }
             guessButton
                 .buttonStyle(.glass)
@@ -97,8 +103,18 @@ struct PegChooser: View {
         static let row2: [Peg] = "ASDFGHJKLZ".map { String($0) }
         static let row3: [Peg] = "XCVBNM".map { String($0) }
     }
+    
+    func colorFor(peg choice: Peg) -> Color {
+        let status = pegChoiceStatuses[choice]
+        switch status {
+        case .exact: return .exactMatchAttemptPegChoiceColor
+        case .inexact: return .inexactMatchAttemptPegChoiceColor
+        case .noMatch: return .unmatchAttemptPegChoiceColor
+        default: return .accentColor
+        }
+    }
 }
 
 #Preview {
-    PegChooser(onChoose: { _ in print("Choosing")}, onDelete: { print("Deleting")}, onGuess: { print("Guessing")})
+    PegChooser(pegChoiceStatuses: [:], onChoose: {_ in print("Choosing")}, onDelete: {print("Deleting")}, onGuess: {print("Guessing")})
 }

@@ -16,6 +16,7 @@ struct CodeBreaker {
     var guess: Code
     var attempts: [Code] = []
     let pegChoices: [Peg]
+    var pegChoiceStatuses: [Peg: Match?] = [:]
     
     static var dummyCode: Code {
         var someCode = Code(kind: .guess, codeLength: 5)
@@ -28,6 +29,9 @@ struct CodeBreaker {
         self.pegChoices = "QWERTYUIOPASDFGHJKLZXCVBNM".map { String($0) }
         self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
         self.guess = Code(kind: .guess, codeLength: codeLength)
+        for pegChoice in pegChoices {
+            self.pegChoiceStatuses[pegChoice] = nil
+        }
     }
     
     var isOver: Bool {
@@ -38,7 +42,17 @@ struct CodeBreaker {
         var attempt = guess
         attempt.kind = .attempt(guess.match(against: masterCode))
         attempts.append(attempt)
+        for index in 0..<codeLength {
+            let peg = attempt.pegs[index]
+            let match = attempt.matches![index]
+            if self.pegChoiceStatuses[peg] == nil {
+                self.pegChoiceStatuses[peg] = match
+            } else if self.pegChoiceStatuses[peg] == .inexact && match == .exact {
+                self.pegChoiceStatuses[peg] = .exact
+            }
+        }
         guess.reset()
+//        print(self.pegChoiceStatuses)
         if isOver {
             masterCode.kind = .master(isHidden: false)
         }
@@ -78,6 +92,10 @@ struct CodeBreaker {
         self.attempts.removeAll()
         self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
         self.guess = Code(kind: .guess, codeLength: codeLength)
+        for pegChoice in pegChoices {
+            self.pegChoiceStatuses[pegChoice] = nil
+        }
+        
     }
 }
 
