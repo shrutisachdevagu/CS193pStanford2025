@@ -21,6 +21,7 @@ struct  CodeWordBreakerView: View {
     var body: some View {
         VStack {
             view(for: game.masterCode)
+                .animation(nil, value: game.codeLength)
             ScrollView {
                 if !game.isOver {
                     view(for: game.guess)
@@ -29,14 +30,24 @@ struct  CodeWordBreakerView: View {
                     view(for: game.attempts[index])
                 }
             }
-            codeLengthChooser
+            codeLengthChooserAndRestarter
                 .padding()
                 .buttonStyle(.bordered)
-            PegChooser(pegChoiceStatuses: game.pegChoiceStatuses) { peg in
-                game.setGuessPeg(peg, at: selection)
-                selection = (selection + 1) % game.codeLength
-            } onDelete: { deleteSelectedCharacterFromGuess() } onGuess: { guessWord() }
-                .disabled(game.isOver)
+//                .animation(nil, value: game.isOver)
+            VStack {
+                if(!game.isOver) {
+                    PegChooser(pegChoiceStatuses: game.pegChoiceStatuses) { peg in
+                        game.setGuessPeg(peg, at: selection)
+                        selection = (selection + 1) % game.codeLength
+                    }
+                    onDelete: { deleteSelectedCharacterFromGuess() }
+                    onGuess: { withAnimation(.codeBreakerSlowEaseInOut) {
+                        guessWord() }
+                    }
+                    .transition(.offset(x: 0,y: 200))
+                    //                .disabled(game.isOver)
+                }
+            }
         }
         .onChange(of: words.count, initial: true) {
             if game.attempts.count == 0 { // don’t disrupt a game in progress
@@ -51,26 +62,20 @@ struct  CodeWordBreakerView: View {
         
         .padding()
     }
-    var resetButton: some View {
-        Button("Restart") {
-            game.restart(codeLength: game.codeLength)
-            game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
-            selection = 0
-            print("Master code is :\(game.masterCode.word)")
-        }
-    }
     
-    var codeLengthChooser: some View {
+    var codeLengthChooserAndRestarter: some View {
         HStack {
             Text("Word length")
                 .foregroundStyle(.secondary)
             ForEach(3..<7) { length in
                 Button("\(length)") {
-                    game.codeLength = length
-                    game.restart(codeLength: game.codeLength)
-                    game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
-                    selection = 0
-                    print("Master code is :\(game.masterCode.word)")
+                    withAnimation(.codeBreakerSlowEaseInOut) {
+                        game.codeLength = length
+                        game.restart(codeLength: game.codeLength)
+                        game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
+                        selection = 0
+                        print("Master code is :\(game.masterCode.word)")
+                    }
                 }
                 .background(game.codeLength == length ? .blue.opacity(0.5) : .white, in: .capsule)
                 .foregroundStyle(game.codeLength == length ? .black : .blue)
@@ -90,6 +95,7 @@ struct  CodeWordBreakerView: View {
             game.resetGuessPeg(at: selection)
         }
     }
+    
     fileprivate func guessWord() {
         print("Guess is \(game.guess.word) and \(checker.isAWord(game.guess.word.lowercased()) ? "its" : "its not") a valid word")
         if !game.isGuessAlreadyAttempted() && !game.isGuessMissingPegs() && checker.isAWord(game.guess.word.lowercased()){

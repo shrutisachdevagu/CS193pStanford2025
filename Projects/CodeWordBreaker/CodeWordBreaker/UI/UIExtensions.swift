@@ -25,6 +25,7 @@ extension Color {
 
 
 extension Animation {
-    static let codeBreakerFast = Animation.easeInOut
-    static let codeBreakerSlow = Animation.easeInOut(duration: 5)
+    static let codeBreakerFastEaseInOut = Animation.easeInOut
+    static let codeBreakerSlowEaseInOut = Animation.easeInOut(duration: 5)
+    static let codeBreakerSlowBouncy = Animation.bouncy(duration: 5, extraBounce: 2)
 }
