@@ -18,7 +18,6 @@ struct  CodeWordBreakerView: View {
     @State private var checker = UITextChecker()
     
     // MARK: - Body
-        
     var body: some View {
         VStack {
             view(for: game.masterCode)
@@ -30,16 +29,14 @@ struct  CodeWordBreakerView: View {
                     view(for: game.attempts[index])
                 }
             }
-            resetButton
             codeLengthChooser
-                .disabled(!game.attempts.isEmpty)
-            .padding()
-            .buttonStyle(.bordered)
+                .padding()
+                .buttonStyle(.bordered)
             PegChooser(pegChoiceStatuses: game.pegChoiceStatuses) { peg in
                 game.setGuessPeg(peg, at: selection)
                 selection = (selection + 1) % game.codeLength
             } onDelete: { deleteSelectedCharacterFromGuess() } onGuess: { guessWord() }
-            .disabled(game.isOver)
+                .disabled(game.isOver)
         }
         .onChange(of: words.count, initial: true) {
             if game.attempts.count == 0 { // don’t disrupt a game in progress
@@ -54,7 +51,6 @@ struct  CodeWordBreakerView: View {
         
         .padding()
     }
-
     var resetButton: some View {
         Button("Restart") {
             game.restart(codeLength: game.codeLength)
