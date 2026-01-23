@@ -70,8 +70,11 @@ struct  CodeWordBreakerView: View {
                 .foregroundStyle(.secondary)
             ForEach(3..<7) { length in
                 Button("\(length)") {
-                    game.restart(codeLength: length)
+                    game.codeLength = length
+                    game.restart(codeLength: game.codeLength)
+                    game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
                     selection = 0
+                    print("Master code is :\(game.masterCode.word)")
                 }
                 .background(game.codeLength == length ? .blue.opacity(0.5) : .white, in: .capsule)
                 .foregroundStyle(game.codeLength == length ? .black : .blue)
