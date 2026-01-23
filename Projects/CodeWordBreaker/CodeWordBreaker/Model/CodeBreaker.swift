@@ -86,9 +86,8 @@ struct CodeBreaker {
         return guess.pegs.contains(Code.missingPeg)
     }
     
-    mutating func restart() {
-        self.codeLength = Int.random(in: 3...6)
-//        self.codeLength = 5
+    mutating func restart(codeLength: Int) {
+        self.codeLength = codeLength
         self.attempts.removeAll()
         self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
         self.guess = Code(kind: .guess, codeLength: codeLength)

@@ -31,6 +31,8 @@ struct  CodeWordBreakerView: View {
                 }
             }
             resetButton
+            codeLengthChooser
+                .disabled(!game.attempts.isEmpty)
             .padding()
             .buttonStyle(.bordered)
             PegChooser(pegChoiceStatuses: game.pegChoiceStatuses) { peg in
@@ -55,10 +57,25 @@ struct  CodeWordBreakerView: View {
 
     var resetButton: some View {
         Button("Restart") {
-            game.restart()
+            game.restart(codeLength: game.codeLength)
             game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
             selection = 0
             print("Master code is :\(game.masterCode.word)")
+        }
+    }
+    
+    var codeLengthChooser: some View {
+        HStack {
+            Text("Word length")
+                .foregroundStyle(.secondary)
+            ForEach(3..<7) { length in
+                Button("\(length)") {
+                    game.restart(codeLength: length)
+                    selection = 0
+                }
+                .background(game.codeLength == length ? .blue.opacity(0.5) : .white, in: .capsule)
+                .foregroundStyle(game.codeLength == length ? .black : .blue)
+            }
         }
     }
     
