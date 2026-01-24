@@ -29,6 +29,7 @@ struct CodeBreakerView: View {
                     CodeView(code: game.guess, selection: $selection) {
                         Button("Guess",action: guess)
                             .flexibleSystemFont()
+ 
                     }
                     .animation(nil, value: game.attempts.count)
                     .opacity(restarting ? 0 : 1)
@@ -47,6 +48,7 @@ struct CodeBreakerView: View {
             if !game.isOver {
                 PegChooser(choices: game.pegChoices,onChoose: changePegAtSelection)
                     .transition(.pegChooser)
+                    .frame(maxHeight: 90)
             }
         }
         .padding()
