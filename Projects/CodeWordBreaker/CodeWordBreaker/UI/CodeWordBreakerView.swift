@@ -22,6 +22,12 @@ struct  CodeWordBreakerView: View {
         VStack {
             view(for: game.masterCode)
                 .animation(nil, value: game.codeLength)
+                .transaction { transaction in
+                    if game.masterCode.isHidden {
+                        transaction.animation = nil
+                    }
+                }
+
             ScrollView {
                 if !game.isOver {
                     view(for: game.guess)
@@ -33,7 +39,6 @@ struct  CodeWordBreakerView: View {
             codeLengthChooserAndRestarter
                 .padding()
                 .buttonStyle(.bordered)
-//                .animation(nil, value: game.isOver)
             VStack {
                 if(!game.isOver) {
                     PegChooser(pegChoiceStatuses: game.pegChoiceStatuses) { peg in
@@ -45,7 +50,6 @@ struct  CodeWordBreakerView: View {
                         guessWord() }
                     }
                     .transition(.offset(x: 0,y: 200))
-                    //                .disabled(game.isOver)
                 }
             }
         }
