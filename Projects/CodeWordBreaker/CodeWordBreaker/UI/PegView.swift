@@ -5,41 +5,6 @@
 //  Created by Shruti Sachdeva on 05/01/26.
 //
 
-enum PegType {
-    case selectedGuessPeg
-    case unselectedGuessPeg
-    case hiddenMasterCodePeg
-    case unhiddenMasterCodePeg
-    case exactMatchAttemptPeg
-    case inexactMatchAttemptPeg
-    case noMatchAttemptPeg
-    case pegChoice
-    case none
-    
-    func colorForPegType()->Color {
-        switch self {
-        case .exactMatchAttemptPeg:
-            return .green
-        case .selectedGuessPeg:
-            return .blue
-        case .unselectedGuessPeg:
-            return .gray.opacity(0.01)
-        case .hiddenMasterCodePeg:
-            return .clear
-        case .unhiddenMasterCodePeg:
-            return .indigo
-        case .inexactMatchAttemptPeg:
-            return .yellow
-        case .noMatchAttemptPeg:
-            return .red
-        case .pegChoice:
-            return .clear
-        case .none:
-            return .clear
-        }
-    }
-}
-
 import SwiftUI
 
 struct PegView: View {
@@ -61,24 +26,62 @@ struct PegView: View {
                 Text(peg)
                     .font(.title)
             }
-            .background {
+            .background { // type of pegs - attempt, guess, selection
                 RoundedRectangle(cornerRadius: 7)
-                    .fill(pegType.colorForPegType().opacity(0.3))
+                    .fill(pegType.colorForPegType())
             }
-            .padding(pegType == .unselectedGuessPeg ? 5 : 0)
-            .overlay {
-                Group {
-                    if pegType == .hiddenMasterCodePeg {
-                        RoundedRectangle(cornerRadius: 7)
-                            .fill(.gray)
-                    }
+            .overlay { // hidding master code
+                if pegType == .masterPeg(isHidden: true) {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(pegType.colorForPegType())
                 }
-                .animation(nil, value: pegType)
             }
-        }
+    }
 }
 
 #Preview {
-    PegView(peg: "R",pegType: .exactMatchAttemptPeg)
+    PegView(peg: "R", pegType: .masterPeg(isHidden: true))
         .padding()
 }
+
+enum PegType: Equatable {
+    case guessPeg(isSelected: Bool)
+    case attemptPeg(matchType: Match)
+    case pegChoicePeg
+    case masterPeg(isHidden: Bool)
+    case neutralPeg
+    
+    func colorForPegType()->Color {
+        switch self {
+        case .attemptPeg(let matchType):
+            switch matchType {
+            case .noMatch:
+                return .unmatchAttemptPegColor
+            case .exact:
+                return .exactMatchAttemptPegColor
+            case .inexact:
+                return .inexactMatchAttemptPegColor
+            }
+        case .guessPeg(let isSelected):
+            switch isSelected {
+            case true:
+                return .selectedGuessPegColor
+            case false:
+                return .unselectedGuessPegColor
+            }
+        case .pegChoicePeg:
+            return .pegChoicePegColor
+        case .masterPeg(let isHidden):
+            switch isHidden {
+            case true:
+                return .hiddenMasterPegColor
+            case false:
+                return .unhiddenMasterPegColor
+            }
+        case .neutralPeg:
+            return .neutralPegColor
+        }
+    }
+}
+
+

@@ -25,7 +25,7 @@ struct Code {
         self.pegs = Array(repeating: Code.missingPeg, count: codeLength)
     }
     
-    enum Kind: Equatable{
+    enum Kind: Equatable {
         case master(isHidden: Bool)
         case guess
         case attempt([Match])
@@ -36,6 +36,13 @@ struct Code {
         switch kind {
         case .master(let isHidden): return isHidden
         default: return false
+        }
+    }
+    
+    var matches:[Match]? {
+        switch kind {
+        case .attempt(let matches): return matches
+        default: return nil
         }
     }
     
@@ -50,13 +57,6 @@ struct Code {
     
     mutating func reset(){
         pegs = Array( repeating: Code.missingPeg, count: codeLength)
-    }
-    
-    var matches:[Match]? {
-        switch kind {
-        case .attempt(let matches): return matches
-        default: return nil
-        }
     }
     
     func match(against otherCode:Code)->[Match] {

@@ -16,6 +16,7 @@ struct CodeBreaker {
     var guess: Code
     var attempts: [Code] = []
     let pegChoices: [Peg]
+    var pegChoiceStatuses: [Peg: Match?] = [:]
     
     static var dummyCode: Code {
         var someCode = Code(kind: .guess, codeLength: 5)
@@ -28,6 +29,9 @@ struct CodeBreaker {
         self.pegChoices = "QWERTYUIOPASDFGHJKLZXCVBNM".map { String($0) }
         self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
         self.guess = Code(kind: .guess, codeLength: codeLength)
+        for pegChoice in pegChoices {
+            self.pegChoiceStatuses[pegChoice] = nil
+        }
     }
     
     var isOver: Bool {
@@ -38,7 +42,17 @@ struct CodeBreaker {
         var attempt = guess
         attempt.kind = .attempt(guess.match(against: masterCode))
         attempts.append(attempt)
+        for index in 0..<codeLength {
+            let peg = attempt.pegs[index]
+            let match = attempt.matches![index]
+            if self.pegChoiceStatuses[peg] == nil {
+                self.pegChoiceStatuses[peg] = match
+            } else if self.pegChoiceStatuses[peg] == .inexact && match == .exact {
+                self.pegChoiceStatuses[peg] = .exact
+            }
+        }
         guess.reset()
+//        print(self.pegChoiceStatuses)
         if isOver {
             masterCode.kind = .master(isHidden: false)
         }
@@ -47,6 +61,11 @@ struct CodeBreaker {
     mutating func setGuessPeg(_ peg: Peg, at index: Int) {
         guard guess.pegs.indices.contains(index) else { return }
         guess.pegs[index] = peg
+    }
+    
+    mutating func resetGuessPeg(at index: Int) {
+        guard guess.pegs.indices.contains(index) else { return }
+        guess.pegs[index] = ""
     }
     
     mutating func changeGuessPeg(at index: Int) {
@@ -67,12 +86,15 @@ struct CodeBreaker {
         return guess.pegs.contains(Code.missingPeg)
     }
     
-    mutating func restart() {
-        self.codeLength = Int.random(in: 3...6)
-//        self.codeLength = 5
+    mutating func restart(codeLength: Int) {
+        self.codeLength = codeLength
         self.attempts.removeAll()
         self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
         self.guess = Code(kind: .guess, codeLength: codeLength)
+        for pegChoice in pegChoices {
+            self.pegChoiceStatuses[pegChoice] = nil
+        }
+        
     }
 }
 
