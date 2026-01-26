@@ -13,7 +13,6 @@ struct GameList: View {
     
     // MARK: Date Owned by Me
     @State private var games: [CodeBreaker] = []
-    @State private var showGameEditor: Bool = false
     @State private var gameToEdit: CodeBreaker?
     
     var body: some View {
@@ -25,7 +24,10 @@ struct GameList: View {
                 .contextMenu {
                     editButton(for: game) // editing a game
                     deleteButton(for: game)
-                    
+                }
+                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                    editButton(for: game)
+                        .tint(.accentColor)
                 }
             }
             .onDelete { offsets in
@@ -50,6 +52,16 @@ struct GameList: View {
         }
     }
     
+    var showGameEditor:Binding<Bool> {
+        Binding<Bool> {
+            gameToEdit != nil
+        } set: { newValue in
+            if !newValue {
+                gameToEdit = nil
+            }
+        }
+
+    }
     func deleteButton(for game: CodeBreaker)-> some View{
         Button("Delete", systemImage: "minus.circle", role: .destructive) {
             withAnimation {
@@ -67,12 +79,8 @@ struct GameList: View {
     var addButton:some View {
         Button("Add Game", systemImage: "plus") {
             gameToEdit = CodeBreaker(name: "Untitled", pegChoices: [.red, .blue])
-            showGameEditor = true
         }
-        .onChange(of: gameToEdit) {
-            showGameEditor = gameToEdit != nil
-        }
-        .sheet(isPresented: $showGameEditor, onDismiss: { gameToEdit = nil }) {
+        .sheet(isPresented: showGameEditor) {
             gameEditor
         }
     }
