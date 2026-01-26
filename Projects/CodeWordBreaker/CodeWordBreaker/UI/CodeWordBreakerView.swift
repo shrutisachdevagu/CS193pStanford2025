@@ -75,10 +75,13 @@ struct  CodeWordBreakerView: View {
                 Button("\(length)") {
                     withAnimation(.codeBreakerSlowEaseInOut) {
                         game.codeLength = length
-                        game.restart(codeLength: game.codeLength)
-                        game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
-                        selection = 0
-                        print("Master code is :\(game.masterCode.word)")
+                    } completion: {
+                        withAnimation(.codeBreakerSlowEaseInOut) {
+                            game.restart(codeLength: game.codeLength)
+                            game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
+                            selection = 0
+                            print("Master code is :\(game.masterCode.word)")
+                        }
                     }
                 }
                 .background(game.codeLength == length ? .blue.opacity(0.5) : .white, in: .capsule)
