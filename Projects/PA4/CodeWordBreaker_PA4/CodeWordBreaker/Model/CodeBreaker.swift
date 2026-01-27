@@ -10,13 +10,15 @@ import Foundation
 
 typealias Peg = String
 
-struct CodeBreaker {
+@Observable
+class CodeBreaker {
     var codeLength: Int
     var masterCode: Code
     var guess: Code
     var attempts: [Code] = []
     let pegChoices: [Peg]
     var pegChoiceStatuses: [Peg: Match?] = [:]
+    var lastPlayedTime: Date?
     
     static var dummyCode: Code {
         var someCode = Code(kind: .guess, codeLength: 5)
@@ -38,7 +40,7 @@ struct CodeBreaker {
         attempts.last?.pegs ==  masterCode.pegs
     }
     
-    mutating func attemptGuess(){
+    func attemptGuess(){
         var attempt = guess
         attempt.kind = .attempt(guess.match(against: masterCode))
         attempts.append(attempt)
@@ -52,23 +54,22 @@ struct CodeBreaker {
             }
         }
         guess.reset()
-//        print(self.pegChoiceStatuses)
         if isOver {
             masterCode.kind = .master(isHidden: false)
         }
     }
     
-    mutating func setGuessPeg(_ peg: Peg, at index: Int) {
+    func setGuessPeg(_ peg: Peg, at index: Int) {
         guard guess.pegs.indices.contains(index) else { return }
         guess.pegs[index] = peg
     }
     
-    mutating func resetGuessPeg(at index: Int) {
+    func resetGuessPeg(at index: Int) {
         guard guess.pegs.indices.contains(index) else { return }
         guess.pegs[index] = ""
     }
     
-    mutating func changeGuessPeg(at index: Int) {
+    func changeGuessPeg(at index: Int) {
         let existingPeg = guess.pegs[index]
         if let indexOfExisingPegInPegChoices = pegChoices.firstIndex(of: existingPeg) {
             let newPeg = pegChoices[(indexOfExisingPegInPegChoices + 1) % pegChoices.count]
@@ -86,7 +87,7 @@ struct CodeBreaker {
         return guess.pegs.contains(Code.missingPeg)
     }
     
-    mutating func restart(codeLength: Int) {
+    func restart(codeLength: Int) {
         self.codeLength = codeLength
         self.attempts.removeAll()
         self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
@@ -99,3 +100,12 @@ struct CodeBreaker {
 }
 
 
+extension CodeBreaker: Equatable, Identifiable, Hashable {
+    static func == (lhs: CodeBreaker, rhs: CodeBreaker) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

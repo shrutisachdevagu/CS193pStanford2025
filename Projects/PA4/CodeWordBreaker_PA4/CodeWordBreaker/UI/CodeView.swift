@@ -17,6 +17,11 @@ struct CodeView: View {
     // MARK: Data owned by me
     @Namespace private var selectionNamespace
     
+    init(code: Code, selection: Binding<Int> = .constant(-1)) {
+        self.code = code
+        self._selection = selection
+    }
+    
     // MARK: - Body
     var body: some View {
         HStack {

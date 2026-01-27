@@ -12,15 +12,30 @@ struct  CodeWordBreakerView: View {
     // MARK: Data In
     @Environment(\.words) var words
     
+    // MARK: Data Shared with me
+    @Bindable var game: CodeBreaker
+    
     // MARK: Data Owned by me
-    @State private var game = CodeBreaker()
     @State private var selection: Int = 0
     @State private var checker = UITextChecker()
+    
+    var onExit: () -> Void?
+    
+    init(game: CodeBreaker?, onExit: @escaping () -> Void?) {
+        if let game {
+            self.game = game
+            self.onExit = onExit
+        } else {
+            self.onExit = onExit
+            self.game = CodeBreaker(codeLength: 5)
+            self.game.masterCode.word = words.random(length: 5) ?? "AWAIT"
+        }
+    }
     
     // MARK: - Body
     var body: some View {
         VStack {
-            view(for: game.masterCode)
+            CodeView(code: game.masterCode)
                 .animation(nil, value: game.codeLength)
                 .transaction { transaction in
                     if game.masterCode.isHidden {
@@ -30,16 +45,13 @@ struct  CodeWordBreakerView: View {
 
             ScrollView {
                 if !game.isOver {
-                    view(for: game.guess)
+                    CodeView(code: game.guess, selection: $selection)
                 }
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
-                    view(for: game.attempts[index])
+                    CodeView(code: game.attempts[index])
                         .transition(AnyTransition.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .trailing)))
                 }
             }
-            codeLengthChooserAndRestarter
-                .padding()
-                .buttonStyle(.bordered)
             VStack {
                 if(!game.isOver) {
                     PegChooser(pegChoiceStatuses: game.pegChoiceStatuses) { peg in
@@ -54,41 +66,39 @@ struct  CodeWordBreakerView: View {
                 }
             }
         }
-        .onChange(of: words.count, initial: true) {
-            if game.attempts.count == 0 { // don’t disrupt a game in progress
+        .onChange(of: game, { oldValue, newValue in
+            print("On change of game in code breaker view is, the master code is : ")
+            print(newValue.masterCode.word)
+        })
+        .onAppear {
+            if game.masterCode.word.isEmpty {
+                print("the game came with an empty master code")
                 if words.count == 0 { // no words (yet)
                     game.masterCode.word = "AWAIT"
                 } else {
                     game.masterCode.word = words.random(length: 5) ?? "ERROR"
                 }
-                print("Master code is \(game.masterCode.word)")
+                print("the code breaker view gave the master code as \(game.masterCode.word)")
+            } else {
+                print("On appear the master code of the game in Code breaker view is: ")
+                print(game.masterCode.word)
             }
         }
-        
+        .onDisappear {
+            game.lastPlayedTime = Date.now
+            onExit()
+        }
+//        .onChange(of: words.count, initial: true) {
+//            if game.attempts.count == 0 { // don’t disrupt a game in progress
+//                if words.count == 0 { // no words (yet)
+//                    game.masterCode.word = "AWAIT"
+//                } else {
+//                    game.masterCode.word = words.random(length: 5) ?? "ERROR"
+//                }
+//                print("Master code is \(game.masterCode.word)")
+//            }
+//        }
         .padding()
-    }
-    
-    var codeLengthChooserAndRestarter: some View {
-        HStack {
-            Text("Word length")
-                .foregroundStyle(.secondary)
-            ForEach(3..<7) { length in
-                Button("\(length)") {
-                    withAnimation(.codeBreakerSlowEaseInOut) {
-                        game.codeLength = length
-                    } completion: {
-                        withAnimation(.codeBreakerSlowEaseInOut) {
-                            game.restart(codeLength: game.codeLength)
-                            game.masterCode.pegs = (words.random(length: game.codeLength) ?? "await").map {String($0)}
-                            selection = 0
-                            print("Master code is :\(game.masterCode.word)")
-                        }
-                    }
-                }
-                .background(game.codeLength == length ? .blue.opacity(0.5) : .white, in: .capsule)
-                .foregroundStyle(game.codeLength == length ? .black : .blue)
-            }
-        }
     }
     
     fileprivate func deleteSelectedCharacterFromGuess() {
@@ -115,15 +125,9 @@ struct  CodeWordBreakerView: View {
             selection = 0
         }
     }
-    
-    func view(for code: Code) -> some View {
-        HStack {
-            CodeView(code: code, selection: $selection)
-        }
-    }
 }
 
 #Preview {
-    CodeWordBreakerView()
+    CodeWordBreakerView(game: CodeBreaker(codeLength: 5), onExit: {print("Exit")})
 }
 
