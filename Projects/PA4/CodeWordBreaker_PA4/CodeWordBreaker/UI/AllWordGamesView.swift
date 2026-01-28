@@ -28,7 +28,7 @@ struct AllWordGamesView: View {
             }
             .navigationDestination(for: CodeBreaker.self) { game in
                 CodeWordBreakerView(game: game) {
-                    print("Entry \(#function)")
+                    print("Entry")
                     if game.masterCode.word.isEmpty {
                         allGames.insert(game, at: 0)
                         game.masterCode.word = words.random(length: 5) ?? "AWAIT"
@@ -36,7 +36,7 @@ struct AllWordGamesView: View {
                     }
                     selection = game
                 } onExit: {
-                    print("Exited \(#function)")
+                    print("Exit")
                     if let index = allGames.firstIndex(of: game) {
                         allGames[index] = game
                         allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
