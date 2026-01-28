@@ -13,7 +13,8 @@ struct PegView: View {
     let pegType: PegType
     
     // MARK: Data owned by me
-    let pegShape = RoundedRectangle(cornerRadius: 7)
+    let pegShape = PegShape.chosenPegShape
+    
     
     // MARK: - Body
     
@@ -27,12 +28,12 @@ struct PegView: View {
                     .font(.title)
             }
             .background { // type of pegs - attempt, guess, selection
-                RoundedRectangle(cornerRadius: 7)
+                pegShape
                     .fill(pegType.colorForPegType())
             }
             .overlay { // hidding master code
                 if pegType == .masterPeg(isHidden: true) {
-                    RoundedRectangle(cornerRadius: 10)
+                    pegShape
                         .fill(pegType.colorForPegType())
                 }
             }

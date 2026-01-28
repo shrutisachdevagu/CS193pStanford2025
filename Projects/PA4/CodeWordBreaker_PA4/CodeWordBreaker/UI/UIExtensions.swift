@@ -29,3 +29,9 @@ extension Animation {
     static let codeBreakerSlowEaseInOut = Animation.easeInOut(duration: 5)
     static let codeBreakerSlowBouncy = Animation.bouncy(duration: 5, extraBounce: 2)
 }
+
+struct PegShape {
+    static let circularPegShape = Circle()
+    static let roundedRectangularPegShape = RoundedRectangle(cornerRadius: 10)
+    static let chosenPegShape = roundedRectangularPegShape
+}

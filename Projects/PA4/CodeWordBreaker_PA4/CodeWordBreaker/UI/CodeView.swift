@@ -34,8 +34,7 @@ struct CodeView: View {
                     .padding(Selection.border)
                     .background {
                         if isSummaryCode {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(.ultraThickMaterial)
+                            PegShape.chosenPegShape.fill(.ultraThinMaterial)
                         }
                     }
                     .onTapGesture {
