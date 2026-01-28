@@ -25,7 +25,7 @@ struct WordGameSummaryView: View {
             Text("^[\(game.codeLength) letter](inflect: true)")
                 .font(.title)
             if game.attempts.isEmpty {
-                CodeView(code: game.guess,selection: .constant(0), isSummaryCode: true, onSummaryCodeTap: onSummaryCodeTap)
+                CodeView(code: game.guess, isSummaryCode: true, onSummaryCodeTap: onSummaryCodeTap)
             } else {
                 CodeView(code: game.attempts.last!, isSummaryCode: true, onSummaryCodeTap: onSummaryCodeTap)
             }

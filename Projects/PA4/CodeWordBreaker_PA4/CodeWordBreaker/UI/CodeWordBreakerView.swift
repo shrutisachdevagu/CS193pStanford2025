@@ -80,7 +80,7 @@ struct  CodeWordBreakerView: View {
     }
     
     fileprivate func guessWord() {
-        print("Guess is \(game.guess.word) and \(checker.isAWord(game.guess.word.lowercased()) ? "its" : "its not") a valid word")
+//        print("Guess is \(game.guess.word) and \(checker.isAWord(game.guess.word.lowercased()) ? "its" : "its not") a valid word")
         if !game.isGuessAlreadyAttempted() && !game.isGuessMissingPegs() && checker.isAWord(game.guess.word.lowercased()){
             game.attemptGuess()
             selection = 0

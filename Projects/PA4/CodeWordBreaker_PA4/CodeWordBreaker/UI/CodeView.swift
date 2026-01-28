@@ -32,6 +32,12 @@ struct CodeView: View {
             ForEach(code.pegs.indices, id: \.self ){ index in
                 PegView(peg: code.pegs[index], pegType: getPegTypeFromCodeAt(index: index))
                     .padding(Selection.border)
+                    .background {
+                        if isSummaryCode {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(.ultraThickMaterial)
+                        }
+                    }
                     .onTapGesture {
                         if isSummaryCode {
                            onSummaryCodeTap()
