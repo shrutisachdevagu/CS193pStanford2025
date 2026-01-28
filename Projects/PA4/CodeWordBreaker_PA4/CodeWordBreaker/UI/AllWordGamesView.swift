@@ -15,10 +15,11 @@ struct AllWordGamesView: View {
     // MARK: Data Owned by Me
     @State private var allGames:[CodeBreaker] = []
     @State private var newGame:CodeBreaker = CodeBreaker(codeLength: 5)
+    @State private var selection: CodeBreaker? = nil
     
     var body: some View {
-        NavigationStack {
-            List {
+        NavigationSplitView {
+            List(selection: $selection) {
                 ForEach(allGames){ game in
                     NavigationLink(value: game) {
                         WordGameSummaryView(game: game)
@@ -27,12 +28,18 @@ struct AllWordGamesView: View {
             }
             .navigationDestination(for: CodeBreaker.self) { game in
                 CodeWordBreakerView(game: game) {
-                    print("Exited")
+                    print("Entry \(#function)")
+                    if game.masterCode.word.isEmpty {
+                        allGames.insert(game, at: 0)
+                        game.masterCode.word = words.random(length: 5) ?? "AWAIT"
+                        newGame = CodeBreaker(codeLength: 5)
+                    }
+                    selection = game
+                } onExit: {
+                    print("Exited \(#function)")
                     if let index = allGames.firstIndex(of: game) {
                         allGames[index] = game
                         allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
-                    } else {
-                        allGames.insert(game, at: 0)
                     }
                     newGame = CodeBreaker(codeLength: 5)
                 }
@@ -42,6 +49,26 @@ struct AllWordGamesView: View {
                 NavigationLink(value: newGame) {
                     Image(systemName: "plus")
                 }
+            }
+        } detail: {
+            if let selection {
+                CodeWordBreakerView(game: selection, onEntry: {
+                    print("Entry \(#function)")
+                    if selection.masterCode.word.isEmpty {
+                        allGames.insert(selection, at: 0)
+                        selection.masterCode.word = words.random(length: 5) ?? "AWAIT"
+                        newGame = CodeBreaker(codeLength: 5)
+                    }
+                }, onExit: {
+                    print("Exited \(#function)")
+                    if let index = allGames.firstIndex(of: selection) {
+                        allGames[index] = selection
+                        allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
+                    }
+                    newGame = CodeBreaker(codeLength: 5)
+                })
+            } else {
+                Text("Create a game")
             }
         }
     }

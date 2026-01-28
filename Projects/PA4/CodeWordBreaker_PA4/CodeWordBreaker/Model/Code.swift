@@ -13,7 +13,7 @@ enum Match {
     case inexact
 }
 
-struct Code {
+struct Code: Equatable {
     var kind: Kind
     var codeLength: Int
     var pegs: [Peg]

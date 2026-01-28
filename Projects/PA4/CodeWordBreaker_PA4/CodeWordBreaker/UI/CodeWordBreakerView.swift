@@ -19,17 +19,15 @@ struct  CodeWordBreakerView: View {
     @State private var selection: Int = 0
     @State private var checker = UITextChecker()
     
+    var onEntry: () -> Void?
     var onExit: () -> Void?
     
-    init(game: CodeBreaker?, onExit: @escaping () -> Void?) {
-        if let game {
-            self.game = game
-            self.onExit = onExit
-        } else {
-            self.onExit = onExit
-            self.game = CodeBreaker(codeLength: 5)
-            self.game.masterCode.word = words.random(length: 5) ?? "AWAIT"
-        }
+    init(game: CodeBreaker, onEntry: @escaping () -> Void?, onExit: @escaping () -> Void?) {
+        self.game = game
+        self.onEntry = onEntry
+        self.onExit = onExit
+        self.game.lastPlayedTime = Date.now
+        onEntry()
     }
     
     // MARK: - Body
@@ -59,46 +57,18 @@ struct  CodeWordBreakerView: View {
                         selection = (selection + 1) % game.codeLength
                     }
                     onDelete: { deleteSelectedCharacterFromGuess() }
-                    onGuess: { withAnimation(.codeBreakerSlowEaseInOut) {
-                        guessWord() }
-                    }
+                    onGuess: { withAnimation(.codeBreakerSlowEaseInOut) { guessWord() } }
                     .transition(.offset(x: 0,y: 200))
+                    .aspectRatio(1, contentMode: .fit)
                 }
             }
         }
-        .onChange(of: game, { oldValue, newValue in
-            print("On change of game in code breaker view is, the master code is : ")
-            print(newValue.masterCode.word)
-        })
-        .onAppear {
-            if game.masterCode.word.isEmpty {
-                print("the game came with an empty master code")
-                if words.count == 0 { // no words (yet)
-                    game.masterCode.word = "AWAIT"
-                } else {
-                    game.masterCode.word = words.random(length: 5) ?? "ERROR"
-                }
-                print("the code breaker view gave the master code as \(game.masterCode.word)")
-            } else {
-                print("On appear the master code of the game in Code breaker view is: ")
-                print(game.masterCode.word)
-            }
-        }
-        .onDisappear {
-            game.lastPlayedTime = Date.now
+        .padding()
+        .onChange(of: game.guess.word) {
+            print("Game's Guess changed in code breaker view ")
+            self.game.lastPlayedTime = Date.now
             onExit()
         }
-//        .onChange(of: words.count, initial: true) {
-//            if game.attempts.count == 0 { // don’t disrupt a game in progress
-//                if words.count == 0 { // no words (yet)
-//                    game.masterCode.word = "AWAIT"
-//                } else {
-//                    game.masterCode.word = words.random(length: 5) ?? "ERROR"
-//                }
-//                print("Master code is \(game.masterCode.word)")
-//            }
-//        }
-        .padding()
     }
     
     fileprivate func deleteSelectedCharacterFromGuess() {
@@ -128,6 +98,6 @@ struct  CodeWordBreakerView: View {
 }
 
 #Preview {
-    CodeWordBreakerView(game: CodeBreaker(codeLength: 5), onExit: {print("Exit")})
+    CodeWordBreakerView(game: CodeBreaker(codeLength: 5), onEntry: {print("Entry")}, onExit: {print("Exit")})
 }
 
