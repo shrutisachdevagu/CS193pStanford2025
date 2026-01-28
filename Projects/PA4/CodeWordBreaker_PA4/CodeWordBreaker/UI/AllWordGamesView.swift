@@ -22,7 +22,9 @@ struct AllWordGamesView: View {
             List(selection: $selection) {
                 ForEach(allGames){ game in
                     NavigationLink(value: game) {
-                        WordGameSummaryView(game: game)
+                        WordGameSummaryView(game: game) {
+                            selection = game
+                        }
                     }
                 }
             }

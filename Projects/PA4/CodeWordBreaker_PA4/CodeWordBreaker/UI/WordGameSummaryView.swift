@@ -11,14 +11,23 @@ struct WordGameSummaryView: View {
     // MARK: Data Shared with Me
     let game: CodeBreaker
     
+    var onSummaryCodeTap: () -> Void?
+    
+    init(game: CodeBreaker, onSummaryCodeTap: @escaping () -> Void? = {nil}) {
+        self.game = game
+        self.onSummaryCodeTap = onSummaryCodeTap
+    }
+    
+    // MARK: - Body
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("^[\(game.codeLength) letter](inflect: true)")
                 .font(.title)
             if game.attempts.isEmpty {
-                CodeView(code: game.guess, selection: .constant(0))
+                CodeView(code: game.guess,selection: .constant(0), isSummaryCode: true, onSummaryCodeTap: onSummaryCodeTap)
             } else {
-                CodeView(code: game.attempts.last!)
+                CodeView(code: game.attempts.last!, isSummaryCode: true, onSummaryCodeTap: onSummaryCodeTap)
             }
             HStack {
                 Text("^[\(game.attempts.count) attempt](inflect: true)")

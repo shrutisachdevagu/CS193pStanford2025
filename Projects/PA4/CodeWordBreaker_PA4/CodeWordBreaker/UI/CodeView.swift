@@ -9,7 +9,9 @@ import SwiftUI
 
 struct CodeView: View {
     // MARK: Data In
-    let code: Code 
+    let code: Code
+    let isSummaryCode: Bool
+    var onSummaryCodeTap: ()-> Void?
     
     // MARK: Data Shared with Me
     @Binding var selection: Int
@@ -17,9 +19,11 @@ struct CodeView: View {
     // MARK: Data owned by me
     @Namespace private var selectionNamespace
     
-    init(code: Code, selection: Binding<Int> = .constant(-1)) {
+    init(code: Code, selection: Binding<Int> = .constant(-1),isSummaryCode: Bool = false, onSummaryCodeTap: @escaping () -> Void? = {nil}) {
         self.code = code
         self._selection = selection
+        self.isSummaryCode = isSummaryCode
+        self.onSummaryCodeTap = onSummaryCodeTap
     }
     
     // MARK: - Body
@@ -29,7 +33,10 @@ struct CodeView: View {
                 PegView(peg: code.pegs[index], pegType: getPegTypeFromCodeAt(index: index))
                     .padding(Selection.border)
                     .onTapGesture {
-                        if code.kind == .guess {
+                        if isSummaryCode {
+                           onSummaryCodeTap()
+                        }
+                        else if code.kind == .guess {
                             selection = index
                         }
                     }
