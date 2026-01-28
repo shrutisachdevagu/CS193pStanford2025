@@ -53,14 +53,14 @@ struct AllWordGamesView: View {
         } detail: {
             if let selection {
                 CodeWordBreakerView(game: selection, onEntry: {
-                    print("Entry \(#function)")
+                    print("Entry")
                     if selection.masterCode.word.isEmpty {
                         allGames.insert(selection, at: 0)
                         selection.masterCode.word = words.random(length: 5) ?? "AWAIT"
                         newGame = CodeBreaker(codeLength: 5)
                     }
                 }, onExit: {
-                    print("Exited \(#function)")
+                    print("Exit")
                     if let index = allGames.firstIndex(of: selection) {
                         allGames[index] = selection
                         allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)

@@ -26,7 +26,6 @@ struct  CodeWordBreakerView: View {
         self.game = game
         self.onEntry = onEntry
         self.onExit = onExit
-        self.game.lastPlayedTime = Date.now
         onEntry()
     }
     
@@ -40,7 +39,7 @@ struct  CodeWordBreakerView: View {
                         transaction.animation = nil
                     }
                 }
-
+            
             ScrollView {
                 if !game.isOver {
                     CodeView(code: game.guess, selection: $selection)
@@ -58,17 +57,13 @@ struct  CodeWordBreakerView: View {
                     }
                     onDelete: { deleteSelectedCharacterFromGuess() }
                     onGuess: { withAnimation(.codeBreakerSlowEaseInOut) { guessWord() } }
-                    .transition(.offset(x: 0,y: 200))
-                    .aspectRatio(1, contentMode: .fit)
+                        .transition(.offset(x: 0,y: 200))
+                        .aspectRatio(1, contentMode: .fit)
                 }
             }
         }
         .padding()
-        .onChange(of: game.guess.word) {
-            print("Game's Guess changed in code breaker view ")
-            self.game.lastPlayedTime = Date.now
-            onExit()
-        }
+        .onChange(of: game) { selection = 0 }
     }
     
     fileprivate func deleteSelectedCharacterFromGuess() {
@@ -94,6 +89,8 @@ struct  CodeWordBreakerView: View {
             game.guess.reset()
             selection = 0
         }
+        game.lastPlayedTime = Date.now
+        onExit()
     }
 }
 
