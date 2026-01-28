@@ -30,18 +30,10 @@ struct AllWordGamesView: View {
             }
             .navigationDestination(for: CodeBreaker.self) { game in
                 CodeWordBreakerView(game: game) {
-                    if game.masterCode.word.isEmpty {
-                        allGames.insert(game, at: 0)
-                        game.masterCode.word = words.random(length: 5) ?? "AWAIT"
-                        newGame = CodeBreaker(codeLength: 5)
-                    }
+                    beforeStarting(game: game)
                     selection = game
                 } onExit: {
-                    if let index = allGames.firstIndex(of: game) {
-                        allGames[index] = game
-                        allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
-                    }
-                    newGame = CodeBreaker(codeLength: 5)
+                    afterSwitchingFrom(game: game)
                 }
             }
             .navigationTitle("My games")
@@ -53,22 +45,30 @@ struct AllWordGamesView: View {
         } detail: {
             if let selection {
                 CodeWordBreakerView(game: selection, onEntry: {
-                    if selection.masterCode.word.isEmpty {
-                        allGames.insert(selection, at: 0)
-                        selection.masterCode.word = words.random(length: 5) ?? "AWAIT"
-                        newGame = CodeBreaker(codeLength: 5)
-                    }
+                    beforeStarting(game: selection)
                 }, onExit: {
-                    if let index = allGames.firstIndex(of: selection) {
-                        allGames[index] = selection
-                        allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
-                    }
-                    newGame = CodeBreaker(codeLength: 5)
+                    afterSwitchingFrom(game: selection)
                 })
             } else {
                 Text("Create a game")
             }
         }
+    }
+    
+    func beforeStarting(game: CodeBreaker) {
+        if game.masterCode.word.isEmpty {
+            allGames.insert(game, at: 0)
+            game.masterCode.word = words.random(length: 5) ?? "AWAIT"
+            newGame = CodeBreaker(codeLength: 5)
+        }
+    }
+    
+    func afterSwitchingFrom(game: CodeBreaker) {
+        if let index = allGames.firstIndex(of: game) {
+            allGames[index] = game
+            allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
+        }
+        newGame = CodeBreaker(codeLength: 5)
     }
 }
 
