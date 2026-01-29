@@ -8,49 +8,35 @@
 import SwiftUI
 
 extension Color {
-    static let unmatchAttemptPegColor = Color.red.opacity(0.3)
-    static let exactMatchAttemptPegColor = Color.green.opacity(0.3)
-    static let inexactMatchAttemptPegColor = Color.yellow.opacity(0.3)
-    static let selectedGuessPegColor = Color.blue.opacity(0.3)
-    static let unselectedGuessPegColor = Color.gray.opacity(0.02)
-    static let hiddenMasterPegColor = Color.gray
-    static let unhiddenMasterPegColor = Color.purple.opacity(0.3)
-    static let pegChoicePegColor = Color.white
-    static let neutralPegColor = Color.white
-    
-    static let unmatchAttemptPegChoiceColor = Color.red
-    static let exactMatchAttemptPegChoiceColor = Color.green
-    static let inexactMatchAttemptPegChoiceColor = Color.yellow
-    
     static func color(for peg: PegType) -> Color {
         switch peg {
         case .attemptPeg(let matchType):
             switch matchType {
             case .noMatch:
-                return .unmatchAttemptPegColor
+                return GameSettings.shared.unmatchAttemptPegColor
             case .exact:
-                return .exactMatchAttemptPegColor
+                return GameSettings.shared.exactMatchAttemptPegColor
             case .inexact:
-                return .inexactMatchAttemptPegColor
+                return GameSettings.shared.inexactMatchAttemptPegColor
             }
         case .guessPeg(let isSelected):
             switch isSelected {
             case true:
-                return .selectedGuessPegColor
+                return GameSettings.shared.selectedGuessPegColor
             case false:
-                return .unselectedGuessPegColor
+                return GameSettings.shared.unselectedGuessPegColor
             }
         case .pegChoicePeg:
-            return .pegChoicePegColor
+            return GameSettings.shared.pegChoicePegColor
         case .masterPeg(let isHidden):
             switch isHidden {
             case true:
-                return .hiddenMasterPegColor
+                return GameSettings.shared.hiddenMasterPegColor
             case false:
-                return .unhiddenMasterPegColor
+                return GameSettings.shared.unhiddenMasterPegColor
             }
         case .neutralPeg:
-            return .neutralPegColor
+            return GameSettings.shared.neutralPegColor
         }
     }
 }

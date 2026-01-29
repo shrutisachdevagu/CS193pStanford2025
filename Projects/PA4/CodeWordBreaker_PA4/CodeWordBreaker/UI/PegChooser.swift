@@ -11,6 +11,7 @@ struct PegChooser: View {
     
     // MARK: Data In
     let pegChoiceStatuses: [Peg: Match?]
+    @Environment(\.gameSettings) var gameSettings
     
     // MARK: Data Out Function
     let onChoose: ((Peg) -> Void)?
@@ -107,9 +108,9 @@ struct PegChooser: View {
     func colorFor(peg choice: Peg) -> Color {
         let status = pegChoiceStatuses[choice]
         switch status {
-        case .exact: return .exactMatchAttemptPegChoiceColor
-        case .inexact: return .inexactMatchAttemptPegChoiceColor
-        case .noMatch: return .unmatchAttemptPegChoiceColor
+        case .exact: return gameSettings.exactMatchAttemptPegChoiceColor
+        case .inexact: return gameSettings.inexactMatchAttemptPegChoiceColor
+        case .noMatch: return gameSettings.unmatchAttemptPegChoiceColor
         default: return .accentColor
         }
     }
