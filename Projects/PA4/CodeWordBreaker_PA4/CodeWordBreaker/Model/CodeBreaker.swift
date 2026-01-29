@@ -69,16 +69,6 @@ class CodeBreaker {
         guess.pegs[index] = ""
     }
     
-    func changeGuessPeg(at index: Int) {
-        let existingPeg = guess.pegs[index]
-        if let indexOfExisingPegInPegChoices = pegChoices.firstIndex(of: existingPeg) {
-            let newPeg = pegChoices[(indexOfExisingPegInPegChoices + 1) % pegChoices.count]
-            guess.pegs[index] = newPeg
-        } else {
-            guess.pegs[index] = pegChoices.first ?? Code.missingPeg
-        }
-    }
-    
     func isGuessAlreadyAttempted()->Bool {
         return attempts.contains {$0.pegs == guess.pegs}
     }
