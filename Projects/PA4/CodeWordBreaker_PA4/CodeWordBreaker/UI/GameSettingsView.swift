@@ -35,9 +35,23 @@ struct GameSettingsView: View {
                 }
                 
                 HStack {
-                    
+                    Text("Word Length")
+                    Spacer()
+                    ForEach(3..<7) { index in
+                        Text(index, format: .number)
+                            .padding()
+                            .background {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(.gray.opacity(0.5))
+                                    .strokeBorder(gameSettings.codeLength == index ? .blue : .clear, lineWidth: 3)
+                                
+                            }
+                            .onTapGesture {
+                                gameSettings.codeLength = index
+                            }
+                            
+                    }
                 }
-                
                 
             }
             .navigationTitle("Settings")

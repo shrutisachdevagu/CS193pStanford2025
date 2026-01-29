@@ -62,11 +62,17 @@ struct AllWordGamesView: View {
                 Text("Create a game")
             }
         }
+        .onChange(of: gameSettings.codeLength) {
+            newGame.codeLength = gameSettings.codeLength
+            newGame.masterCode.word = words.random(length: newGame.codeLength) ?? "AWAIT"
+        }
     }
     
     func beforeStarting(game: CodeBreaker) {
         if game.masterCode.word.isEmpty {
             allGames.insert(game, at: 0)
+            game.masterCode.word = words.random(length: game.codeLength) ?? "AWAIT"
+            newGame = CodeBreaker(codeLength: game.codeLength)
         }
     }
     
@@ -75,6 +81,7 @@ struct AllWordGamesView: View {
             allGames[index] = game
             allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
         }
+        newGame = CodeBreaker(codeLength: gameSettings.codeLength)
     }
 }
 
