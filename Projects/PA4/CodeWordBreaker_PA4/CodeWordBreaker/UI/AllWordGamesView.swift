@@ -19,6 +19,8 @@ struct AllWordGamesView: View {
     @State private var selection: CodeBreaker? = nil
     @State private var isSettingSheetPresented: Bool = false
     
+    // MARK: - Body
+    
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
@@ -63,15 +65,14 @@ struct AllWordGamesView: View {
             }
         }
         .onChange(of: gameSettings.codeLength) {
-            newGame.codeLength = gameSettings.codeLength
-            newGame.masterCode.word = words.random(length: newGame.codeLength) ?? "AWAIT"
+            newGame.restart(codeLength: gameSettings.codeLength)
         }
     }
     
     func beforeStarting(game: CodeBreaker) {
         if game.masterCode.word.isEmpty {
             allGames.insert(game, at: 0)
-            game.masterCode.word = words.random(length: game.codeLength) ?? "AWAIT"
+            game.masterCode.word = words.random(length: game.codeLength) ?? dummyWord(of: game.codeLength)
             newGame = CodeBreaker(codeLength: game.codeLength)
         }
     }
@@ -82,6 +83,16 @@ struct AllWordGamesView: View {
             allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
         }
         newGame = CodeBreaker(codeLength: gameSettings.codeLength)
+    }
+    
+    func dummyWord(of length: Int) -> String {
+        switch length {
+        case 3: return "ATE"
+        case 4: return "FOUR"
+        case 5: return "AWAIT"
+        case 6: return "SANITY"
+        default: return ""
+        }
     }
 }
 
