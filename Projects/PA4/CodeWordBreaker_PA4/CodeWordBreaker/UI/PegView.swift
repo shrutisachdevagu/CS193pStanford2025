@@ -11,15 +11,12 @@ struct PegView: View {
     // MARK: Data In
     let peg: Peg
     let pegType: PegType
-    
-    // MARK: Data owned by me
-    let pegShape = PegShape.chosenPegShape
-    
+    @Environment(\.gameSettings) var gameSettings
     
     // MARK: - Body
     
     var body: some View {
-        pegShape
+        gameSettings.shape()
             .stroke(.clear)
             .padding()
             .aspectRatio(1, contentMode: .fit)
@@ -28,13 +25,13 @@ struct PegView: View {
                     .font(.title)
             }
             .background { // type of pegs - attempt, guess, selection
-                pegShape
-                    .fill(pegType.colorForPegType())
+                gameSettings.shape()
+                    .fill(Color.color(for: pegType))
             }
             .overlay { // hidding master code
                 if pegType == .masterPeg(isHidden: true) {
-                    pegShape
-                        .fill(pegType.colorForPegType())
+                    gameSettings.shape()
+                        .fill(Color.color(for: pegType))
                 }
             }
     }
@@ -51,38 +48,6 @@ enum PegType: Equatable {
     case pegChoicePeg
     case masterPeg(isHidden: Bool)
     case neutralPeg
-    
-    func colorForPegType()->Color {
-        switch self {
-        case .attemptPeg(let matchType):
-            switch matchType {
-            case .noMatch:
-                return .unmatchAttemptPegColor
-            case .exact:
-                return .exactMatchAttemptPegColor
-            case .inexact:
-                return .inexactMatchAttemptPegColor
-            }
-        case .guessPeg(let isSelected):
-            switch isSelected {
-            case true:
-                return .selectedGuessPegColor
-            case false:
-                return .unselectedGuessPegColor
-            }
-        case .pegChoicePeg:
-            return .pegChoicePegColor
-        case .masterPeg(let isHidden):
-            switch isHidden {
-            case true:
-                return .hiddenMasterPegColor
-            case false:
-                return .unhiddenMasterPegColor
-            }
-        case .neutralPeg:
-            return .neutralPegColor
-        }
-    }
 }
 
 

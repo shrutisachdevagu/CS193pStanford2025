@@ -11,11 +11,13 @@ struct AllWordGamesView: View {
     
     // MARK: Data Shared with Me
     @Environment(\.words) var words
+    @Environment(\.gameSettings) var gameSettings
     
     // MARK: Data Owned by Me
     @State private var allGames:[CodeBreaker] = []
     @State private var newGame:CodeBreaker = CodeBreaker(codeLength: 5)
     @State private var selection: CodeBreaker? = nil
+    @State private var isSettingSheetPresented: Bool = false
     
     var body: some View {
         NavigationSplitView {
@@ -41,6 +43,13 @@ struct AllWordGamesView: View {
                 NavigationLink(value: newGame) {
                     Image(systemName: "plus")
                 }
+                Image(systemName: "gearshape.fill")
+                    .onTapGesture {
+                        isSettingSheetPresented = true
+                    }
+                    .sheet(isPresented: $isSettingSheetPresented) {
+                        GameSettingsView()
+                    }
             }
         } detail: {
             if let selection {
@@ -58,8 +67,6 @@ struct AllWordGamesView: View {
     func beforeStarting(game: CodeBreaker) {
         if game.masterCode.word.isEmpty {
             allGames.insert(game, at: 0)
-            game.masterCode.word = words.random(length: 5) ?? "AWAIT"
-            newGame = CodeBreaker(codeLength: 5)
         }
     }
     
@@ -68,7 +75,6 @@ struct AllWordGamesView: View {
             allGames[index] = game
             allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
         }
-        newGame = CodeBreaker(codeLength: 5)
     }
 }
 

@@ -21,6 +21,38 @@ extension Color {
     static let unmatchAttemptPegChoiceColor = Color.red
     static let exactMatchAttemptPegChoiceColor = Color.green
     static let inexactMatchAttemptPegChoiceColor = Color.yellow
+    
+    static func color(for peg: PegType) -> Color {
+        switch peg {
+        case .attemptPeg(let matchType):
+            switch matchType {
+            case .noMatch:
+                return .unmatchAttemptPegColor
+            case .exact:
+                return .exactMatchAttemptPegColor
+            case .inexact:
+                return .inexactMatchAttemptPegColor
+            }
+        case .guessPeg(let isSelected):
+            switch isSelected {
+            case true:
+                return .selectedGuessPegColor
+            case false:
+                return .unselectedGuessPegColor
+            }
+        case .pegChoicePeg:
+            return .pegChoicePegColor
+        case .masterPeg(let isHidden):
+            switch isHidden {
+            case true:
+                return .hiddenMasterPegColor
+            case false:
+                return .unhiddenMasterPegColor
+            }
+        case .neutralPeg:
+            return .neutralPegColor
+        }
+    }
 }
 
 
@@ -30,8 +62,5 @@ extension Animation {
     static let codeBreakerSlowBouncy = Animation.bouncy(duration: 5, extraBounce: 2)
 }
 
-struct PegShape {
-    static let circularPegShape = Circle()
-    static let roundedRectangularPegShape = RoundedRectangle(cornerRadius: 10)
-    static let chosenPegShape = roundedRectangularPegShape
-}
+
+

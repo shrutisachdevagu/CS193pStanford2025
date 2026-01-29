@@ -12,6 +12,7 @@ struct CodeView: View {
     let code: Code
     let isSummaryCode: Bool
     var onSummaryCodeTap: ()-> Void?
+    @Environment(\.gameSettings) var gameSettings
     
     // MARK: Data Shared with Me
     @Binding var selection: Int
@@ -34,7 +35,7 @@ struct CodeView: View {
                     .padding(Selection.border)
                     .background {
                         if isSummaryCode {
-                            PegShape.chosenPegShape.fill(.ultraThinMaterial)
+                            gameSettings.shape().fill(.ultraThinMaterial)
                         }
                     }
                     .onTapGesture {
