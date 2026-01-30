@@ -67,6 +67,9 @@ struct AllWordGamesView: View {
         .onChange(of: gameSettings.codeLength) {
             newGame.restart(codeLength: gameSettings.codeLength)
         }
+        .onAppear {
+            preLoadSampleGames()
+        }
     }
     
     func beforeStarting(game: CodeBreaker) {
@@ -93,6 +96,23 @@ struct AllWordGamesView: View {
         case 6: return "SANITY"
         default: return ""
         }
+    }
+    
+    func preLoadSampleGames() {
+        let game1 = CodeBreaker(codeLength: 4)
+        game1.restart(codeLength: game1.codeLength)
+        game1.masterCode.word = words.random(length: game1.codeLength) ?? dummyWord(of: game1.codeLength)
+        game1.guess.word = "STOP"
+        game1.attemptGuess()
+        game1.guess.word = "FATE"
+        game1.attemptGuess()
+        allGames.insert(game1, at: 0)
+        let game2 = CodeBreaker(codeLength: 6)
+        game2.restart(codeLength: game2.codeLength)
+        game2.masterCode.word = words.random(length: game2.codeLength) ?? dummyWord(of: game2.codeLength)
+        game2.guess.word = "CLAIMS"
+        game2.attemptGuess()
+        allGames.insert(game2, at: 0)
     }
 }
 
