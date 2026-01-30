@@ -29,7 +29,15 @@ struct AllWordGamesView: View {
                         WordGameSummaryView(game: game) {
                             selection = game
                         }
+                        .contextMenu {
+                            Button("Delete", systemImage: "trash.fill") {
+                                allGames.remove(at: allGames.firstIndex(of: game)!)
+                            }
+                        }
                     }
+                }
+                .onDelete { indexSet in
+                    allGames.remove(atOffsets: indexSet)
                 }
             }
             .navigationDestination(for: CodeBreaker.self) { game in
@@ -52,6 +60,7 @@ struct AllWordGamesView: View {
                     .sheet(isPresented: $isSettingSheetPresented) {
                         GameSettingsView()
                     }
+                EditButton()
             }
         } detail: {
             if let selection {
