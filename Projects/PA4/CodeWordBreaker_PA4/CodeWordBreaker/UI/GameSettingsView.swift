@@ -59,6 +59,7 @@ struct GameSettingsView: View {
                             }
                             .onTapGesture {
                                 gameSettings.codeLength = index
+                                GameSettings.saveGSCodeLengthIntoDefaults()
                             }
                             
                     }

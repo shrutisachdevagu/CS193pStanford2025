@@ -78,6 +78,7 @@ struct AllWordGamesView: View {
         }
         .onAppear {
             //preLoadSampleGames()
+            GameSettings.loadGSCodeLengthFromDefaults()
         }
     }
     

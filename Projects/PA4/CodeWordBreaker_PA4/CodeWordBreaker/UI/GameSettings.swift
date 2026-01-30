@@ -14,7 +14,7 @@ enum PegShape {
 
 @Observable
 class GameSettings {
-    static let shared = GameSettings()
+    static var shared = GameSettings()
 
     var pegShape: PegShape
     var codeLength: Int
@@ -45,6 +45,15 @@ class GameSettings {
         case .rect:
             AnyShape(RoundedRectangle(cornerRadius: 10))
         }
+    }
+    
+    static func loadGSCodeLengthFromDefaults() {
+        UserDefaults.standard.register(defaults: ["GSCodeLength":5])
+        shared.codeLength = UserDefaults.standard.integer(forKey: "GSCodeLength")
+    }
+    
+    static func saveGSCodeLengthIntoDefaults() {
+        UserDefaults.standard.set(shared.codeLength, forKey: "GSCodeLength")
     }
 }
 
