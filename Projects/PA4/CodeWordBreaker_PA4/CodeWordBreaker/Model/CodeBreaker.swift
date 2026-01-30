@@ -20,6 +20,10 @@ class CodeBreaker {
     var pegChoiceStatuses: [Peg: Match?] = [:]
     var lastPlayedTime: Date?
     
+    var startTime: Date?
+    var endTime: Date?
+    var elapsedTime: TimeInterval = 0
+    
     static var dummyCode: Code {
         var someCode = Code(kind: .guess, codeLength: 5)
         someCode.pegs = "DUMMY".map{String($0)}
@@ -56,6 +60,8 @@ class CodeBreaker {
         guess.reset()
         if isOver {
             masterCode.kind = .master(isHidden: false)
+            endTime = .now
+            pauseTimer()
         }
     }
     
@@ -69,14 +75,6 @@ class CodeBreaker {
         guess.pegs[index] = ""
     }
     
-    func isGuessAlreadyAttempted()->Bool {
-        return attempts.contains {$0.pegs == guess.pegs}
-    }
-    
-    func isGuessMissingPegs()->Bool {
-        return guess.pegs.contains(Code.missingPeg)
-    }
-    
     func restart(codeLength: Int) {
         self.codeLength = codeLength
         self.attempts.removeAll()
@@ -85,7 +83,32 @@ class CodeBreaker {
         for pegChoice in pegChoices {
             self.pegChoiceStatuses[pegChoice] = nil
         }
-        
+        startTime = nil
+        endTime = nil
+        elapsedTime = 0
+    }
+    
+    func startTimer() {
+        print("timer STARTED - \(self.masterCode.word) & elapsed time is \(self.elapsedTime)")
+        if !isOver && startTime == nil {
+            startTime = Date.now
+        }
+    }
+    
+    func pauseTimer() {
+        print("timer PAUSED - \(self.masterCode.word) & elapsed time is \(self.elapsedTime)")
+        if let startTime {
+            elapsedTime += Date.now.timeIntervalSince(startTime)
+        }
+        startTime = nil
+    }
+    
+    func isGuessAlreadyAttempted()->Bool {
+        return attempts.contains {$0.pegs == guess.pegs}
+    }
+    
+    func isGuessMissingPegs()->Bool {
+        return guess.pegs.contains(Code.missingPeg)
     }
 }
 

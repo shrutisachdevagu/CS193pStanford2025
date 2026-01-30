@@ -77,7 +77,7 @@ struct AllWordGamesView: View {
             newGame.restart(codeLength: gameSettings.codeLength)
         }
         .onAppear {
-            preLoadSampleGames()
+            //preLoadSampleGames()
         }
     }
     
@@ -87,6 +87,7 @@ struct AllWordGamesView: View {
             game.masterCode.word = words.random(length: game.codeLength) ?? dummyWord(of: game.codeLength)
             newGame = CodeBreaker(codeLength: game.codeLength)
         }
+        game.startTimer()
     }
     
     func afterSwitchingFrom(game: CodeBreaker) {
@@ -94,6 +95,7 @@ struct AllWordGamesView: View {
             allGames[index] = game
             allGames.move(fromOffsets: IndexSet(integer: index), toOffset: 0)
         }
+        game.pauseTimer()
         newGame = CodeBreaker(codeLength: gameSettings.codeLength)
     }
     
