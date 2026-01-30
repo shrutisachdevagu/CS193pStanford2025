@@ -22,8 +22,16 @@ struct WordGameSummaryView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("^[\(game.codeLength) letter](inflect: true)")
-                .font(.title)
+            HStack {
+                Text("^[\(game.codeLength) letter](inflect: true)")
+                    .font(.title)
+                
+                if game.isOver {
+                    Spacer()
+                    Image(systemName: "trophy.fill")
+                        .foregroundStyle(GameSettings.shared.unhiddenMasterPegColor)
+                }
+            }
             if game.attempts.isEmpty {
                 CodeView(code: game.guess, isSummaryCode: true, onSummaryCodeTap: onSummaryCodeTap)
             } else {
@@ -32,7 +40,7 @@ struct WordGameSummaryView: View {
             HStack {
                 Text("^[\(game.attempts.count) attempt](inflect: true)")
                 Spacer()
-                Text(game.lastPlayedTime?.formatted(date: .abbreviated, time: .shortened) ?? "--")
+                Text(Duration.seconds(game.elapsedTime.rounded()).formatted())
             }
         }
     }

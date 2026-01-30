@@ -14,20 +14,30 @@ struct ElapsedTimerView: View {
     var format: SystemFormatStyle.DateOffset{
         .offset(to: startTime! - elapsedTime, allowedFields: [.minute,.second])
     }
+    let isOver: Bool
     
     var body: some View {
-        if startTime != nil {
-            if let endTime {
-                Text(endTime, format: format)
+        if !isOver {
+            if startTime != nil {
+                if let endTime {
+                    Text(endTime, format: format)
+                } else {
+                    Text(TimeDataSource<Date>.currentDate, format: format)
+                }
             } else {
-                Text(TimeDataSource<Date>.currentDate, format: format)
+                Image(systemName: "pause")
             }
         } else {
-            Image(systemName: "pause")
+            HStack {
+                Image(systemName: "trophy.fill")
+                    .foregroundStyle(GameSettings.shared.unhiddenMasterPegColor)
+                Text(Duration.seconds(elapsedTime.rounded()).formatted())
+            }
         }
+        
     }
 }
 
 #Preview {
-    ElapsedTimerView(startTime: .now, endTime: .distantFuture)
+    ElapsedTimerView(startTime: .now, endTime: .distantFuture, isOver: true)
 }

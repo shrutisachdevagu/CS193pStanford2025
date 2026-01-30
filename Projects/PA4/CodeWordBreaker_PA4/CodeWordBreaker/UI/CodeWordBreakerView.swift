@@ -53,7 +53,7 @@ struct  CodeWordBreakerView: View {
         }
         .toolbar {
             ToolbarItem {
-                ElapsedTimerView(startTime: game.startTime, endTime: game.endTime, elapsedTime: game.elapsedTime)
+                ElapsedTimerView(startTime: game.startTime, endTime: game.endTime, elapsedTime: game.elapsedTime, isOver: game.isOver)
                     .monospaced()
                     .lineLimit(1)
             }
