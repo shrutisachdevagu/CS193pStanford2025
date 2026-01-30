@@ -60,7 +60,7 @@ struct AllWordGamesView: View {
                     .sheet(isPresented: $isSettingSheetPresented) {
                         GameSettingsView()
                     }
-                EditButton()
+//                EditButton()
             }
         } detail: {
             if let selection {
