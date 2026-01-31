@@ -31,7 +31,7 @@ struct GameEditor: View {
                         .onSubmit { done()}
                 }
                 Section("Pegs") {
-                    PegChoicesChooser(pegChoices: $game.pegChoices)
+                    PegChoicesChooser(pegChoices: $game.pegColorChoices)
                 }
             }
             .toolbar() {
@@ -72,7 +72,7 @@ extension CodeBreaker {
 }
 
 #Preview {
-    @Previewable let game = CodeBreaker(name: "Preview ", pegChoices: [.pink,.purple,.mint,.cyan])
+    @Previewable let game = CodeBreaker(name: "Preview ", pegChoices: [.pink,.purple,.mint,.cyan] )
     GameEditor(game: game, onDone: {print("done tapped")})
         .onChange(of: game.name) {
             print("game name changed to \(game.name)")
