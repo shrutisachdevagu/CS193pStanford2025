@@ -139,7 +139,7 @@ extension CodeBreaker {
         set { pegChoices = newValue.map(\.hex) }
     }
 }
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable @State var game = CodeBreaker(name: "Preview", pegChoices: [.red, .purple, .mint, .black])
     NavigationStack {
         CodeBreakerView(game: game)

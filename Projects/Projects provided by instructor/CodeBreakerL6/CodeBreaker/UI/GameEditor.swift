@@ -71,7 +71,7 @@ extension CodeBreaker {
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable let game = CodeBreaker(name: "Preview ", pegChoices: [.pink,.purple,.mint,.cyan] )
     GameEditor(game: game, onDone: {print("done tapped")})
         .onChange(of: game.name) {

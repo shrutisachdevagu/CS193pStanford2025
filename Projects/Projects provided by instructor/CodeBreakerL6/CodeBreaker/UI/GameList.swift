@@ -6,14 +6,46 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GameList: View {
+    // MARK: Data In
+    @Environment(\.modelContext) var modelContext
+    
     // MARK: Date shared with Me
     @Binding var selection: CodeBreaker?
+    @Query private var games: [CodeBreaker]
     
     // MARK: Date Owned by Me
-    @State private var games: [CodeBreaker] = []
     @State private var gameToEdit: CodeBreaker?
+    
+    
+    init(sortBy:SortOption = .name, nameContains search: String = "", selection: Binding<CodeBreaker?>) {
+        _selection = selection
+        let lowerCaseSearch = search.lowercased()
+        let capitalizedSearch = search.capitalized
+        let predicate = #Predicate<CodeBreaker> { game in
+            lowerCaseSearch.isEmpty || game.name.contains(lowerCaseSearch) || game.name.contains(capitalizedSearch)
+        }
+        switch sortBy {
+        case .name: _games = Query(filter: predicate, sort: \CodeBreaker .name)
+        case .recent: _games = Query(filter: predicate, sort: \CodeBreaker.lastAttemptDate, order: .reverse)
+        }
+       
+    }
+    enum SortOption: CaseIterable {
+        case name
+        case recent
+        
+        var title: String {
+            switch self {
+            case .name:
+                "Sort by Name"
+            case .recent:
+                "Recent"
+            }
+        }
+    }
     
     var body: some View {
         List(selection: $selection) {
@@ -31,10 +63,9 @@ struct GameList: View {
                 }
             }
             .onDelete { offsets in
-                games.remove(atOffsets: offsets)
-            }
-            .onMove { offset, index in
-                games.move(fromOffsets: offset, toOffset: index)
+                for offset in offsets {
+                    modelContext.delete(games[offset])
+                }
             }
         }
         .onChange(of: games) {
@@ -65,7 +96,7 @@ struct GameList: View {
     func deleteButton(for game: CodeBreaker)-> some View{
         Button("Delete", systemImage: "minus.circle", role: .destructive) {
             withAnimation {
-                games.removeAll{$0 == game}
+                modelContext.delete(game)
             }
         }
     }
@@ -90,25 +121,26 @@ struct GameList: View {
         if let gameToEdit {
             let copyOfGameToEdit = CodeBreaker(name: gameToEdit.name, pegChoices: gameToEdit.pegChoices)
             GameEditor(game: copyOfGameToEdit) {
-                if let index = games.firstIndex(of: gameToEdit) {
-                    games[index] = copyOfGameToEdit
-                } else {
-                    games.insert(gameToEdit, at: 0)
-                }
+                if games.contains(gameToEdit) {
+                    modelContext.delete(gameToEdit)
+                 }
+                modelContext.insert(copyOfGameToEdit)
             }
         }
     }
+    
     func addSampleGames() {
-        if games.isEmpty {
-            games.append(CodeBreaker(name: "Mastermind", pegChoices: [.red, .blue, .green, .yellow]))
-            games.append(CodeBreaker(name: "Earth Tones", pegChoices: [.orange, .brown, .black, .yellow, .green]))
-            games.append(CodeBreaker(name: "Undersea", pegChoices: [.blue, .indigo, .cyan, .yellow]))
-            selection = games.first
+        
+        let fetchDescriptor = FetchDescriptor<CodeBreaker>()
+        if let resultsCount = try? modelContext.fetchCount(fetchDescriptor), resultsCount == 0 {
+            modelContext.insert(CodeBreaker(name: "Mastermind", pegChoices: [.red, .blue, .green, .yellow]))
+            modelContext.insert(CodeBreaker(name: "Earth Tones", pegChoices: [.orange, .brown, .black, .yellow, .green]))
+            modelContext.insert(CodeBreaker(name: "Undersea", pegChoices: [.blue, .indigo, .cyan, .yellow]))
         }
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable @State var selectedGame :CodeBreaker? = CodeBreaker(name: "Sample", pegChoices: [.yellow,.black,.purple])
     NavigationStack {
         GameList(selection: $selectedGame)

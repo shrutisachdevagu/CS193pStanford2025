@@ -15,13 +15,19 @@ class CodeBreaker {
     var name: String
     @Relationship(deleteRule: .cascade) var masterCode: Code = Code(kind: .master(isHidden: true))
     @Relationship(deleteRule: .cascade) var guess: Code = Code(kind: .guess)
-    @Relationship(deleteRule: .cascade) var attempts: [Code] = []
+    @Relationship(deleteRule: .cascade) var _attempts: [Code] = []
     var pegChoices: [Peg]
     @Transient var startTime: Date?
     var endTime: Date?
     var elapsedTime: TimeInterval = 0
+    var lastAttemptDate: Date? = Date.now
     
-    init(name: String = "Code Breaker", pegChoices: [Peg]) {
+    var attempts: [Code] {
+        get { _attempts.sorted {$0.timestamp > $1.timestamp } }
+        set { _attempts = newValue }
+    }
+    
+    init(name: String = "Code Breaker", pegChoices: [Peg]  ) {
         self.name = name
         self.pegChoices = pegChoices
         masterCode.randomize(from: pegChoices)
@@ -30,6 +36,7 @@ class CodeBreaker {
     func startTimer() {
         if startTime == nil && !isOver {
             startTime = .now
+            elapsedTime += 0.00001   
         }
     }
     
@@ -55,6 +62,7 @@ class CodeBreaker {
             endTime = .now
             pauseTimer()
         }
+        lastAttemptDate = .now
     }
     func restart() {
         masterCode.kind = .master(isHidden: true)
