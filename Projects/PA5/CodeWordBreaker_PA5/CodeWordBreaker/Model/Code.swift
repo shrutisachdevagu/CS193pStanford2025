@@ -6,30 +6,31 @@
 //
 
 import Foundation
+import SwiftData
 
-enum Match {
+enum Match: String {
     case noMatch
     case exact
     case inexact
 }
 
-struct Code: Equatable {
-    var kind: Kind
+@Model class Code {
+    var kind: Kind {
+        get { Kind(_kind)}
+        set { _kind = newValue.description }
+    }
+    
+    var _kind: String = Kind.unknown.description
     var codeLength: Int
     var pegs: [Peg]
+    var timestamp = Date.now
+
     static let missingPeg: Peg = ""
     
     init(kind: Kind, codeLength: Int) {
-        self.kind = kind
         self.codeLength = codeLength
         self.pegs = Array(repeating: Code.missingPeg, count: codeLength)
-    }
-    
-    enum Kind: Equatable {
-        case master(isHidden: Bool)
-        case guess
-        case attempt([Match])
-        case unknown
+        self.kind = kind
     }
     
     var isHidden: Bool {
@@ -55,8 +56,8 @@ struct Code: Equatable {
         }
     }
     
-    mutating func reset(){
-        pegs = Array( repeating: Code.missingPeg, count: codeLength)
+    func reset(){
+        pegs = Array(repeating: Code.missingPeg, count: codeLength)
     }
     
     func match(against otherCode:Code)->[Match] {

@@ -6,19 +6,28 @@
 //
 
 import Foundation
-
+import SwiftData
 
 typealias Peg = String
 
-@Observable
-class CodeBreaker {
+@Model class CodeBreaker {
     var codeLength: Int
-    var masterCode: Code
-    var guess: Code
-    var attempts: [Code] = []
-    let pegChoices: [Peg]
-    var pegChoiceStatuses: [Peg: Match?] = [:]
-    var lastPlayedTime: Date?
+    @Relationship(deleteRule: .cascade) var masterCode: Code
+    @Relationship(deleteRule: .cascade) var guess: Code
+    @Relationship(deleteRule: .cascade) var _attempts: [Code] = []
+    var attempts: [Code] {
+        get { _attempts.sorted(by: {$0.timestamp < $1.timestamp}) }
+        set { _attempts = newValue }
+    }
+    
+    var pegChoices: [Peg]
+    var pegChoiceStatuses: PegChoiceStatuses {
+        get { PegChoiceStatuses(_pegChoiceStatuses) }
+        set { _pegChoiceStatuses = newValue.description }
+    }
+    
+    var _pegChoiceStatuses: String
+    var lastPlayedTime: Date? = Date.now
     
     var startTime: Date?
     var endTime: Date?
@@ -29,15 +38,13 @@ class CodeBreaker {
         someCode.pegs = "DUMMY".map{String($0)}
         return someCode
     }
-        
+    
     init(codeLength: Int = 5){
         self.codeLength = codeLength
         self.pegChoices = "QWERTYUIOPASDFGHJKLZXCVBNM".map { String($0) }
         self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
         self.guess = Code(kind: .guess, codeLength: codeLength)
-        for pegChoice in pegChoices {
-            self.pegChoiceStatuses[pegChoice] = nil
-        }
+        self._pegChoiceStatuses = PegChoiceStatuses().description
     }
     
     var isOver: Bool {
@@ -45,18 +52,33 @@ class CodeBreaker {
     }
     
     func attemptGuess(){
-        var attempt = guess
+        var attempt = Code(kind: .unknown, codeLength: codeLength)
+        attempt.word = guess.word
         attempt.kind = .attempt(guess.match(against: masterCode))
         attempts.append(attempt)
+        //        for index in 0..<codeLength {
+        //            let peg = attempt.pegs[index]
+        //            let match = attempt.matches![index]
+        //            if self.pegChoiceStatuses[peg] == nil {
+        //                self.pegChoiceStatuses[peg] = match
+        //            } else if self.pegChoiceStatuses[peg] == .inexact && match == .exact {
+        //                self.pegChoiceStatuses[peg] = .exact
+        //            }
+        //        }
+        
+        // FIX: Create a mutable copy, modify it, then assign back
+        var updatedStatuses = pegChoiceStatuses
         for index in 0..<codeLength {
             let peg = attempt.pegs[index]
             let match = attempt.matches![index]
-            if self.pegChoiceStatuses[peg] == nil {
-                self.pegChoiceStatuses[peg] = match
-            } else if self.pegChoiceStatuses[peg] == .inexact && match == .exact {
-                self.pegChoiceStatuses[peg] = .exact
+            if updatedStatuses[peg] == nil {
+                updatedStatuses[peg] = match
+            } else if updatedStatuses[peg] == .inexact && match == .exact {
+                updatedStatuses[peg] = .exact
             }
         }
+        // Save the updated statuses back
+        pegChoiceStatuses = updatedStatuses
         guess.reset()
         if isOver {
             masterCode.kind = .master(isHidden: false)
@@ -80,9 +102,12 @@ class CodeBreaker {
         self.attempts.removeAll()
         self.masterCode = Code(kind: .master(isHidden: true), codeLength: codeLength)
         self.guess = Code(kind: .guess, codeLength: codeLength)
-        for pegChoice in pegChoices {
-            self.pegChoiceStatuses[pegChoice] = nil
-        }
+        //        for pegChoice in pegChoices {
+        //            self.pegChoiceStatuses[pegChoice] = nil
+        //        }
+        
+        var resetStatuses = PegChoiceStatuses()
+        pegChoiceStatuses = resetStatuses
         startTime = nil
         endTime = nil
         elapsedTime = 0
@@ -112,13 +137,3 @@ class CodeBreaker {
     }
 }
 
-
-extension CodeBreaker: Equatable, Identifiable, Hashable {
-    static func == (lhs: CodeBreaker, rhs: CodeBreaker) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}

@@ -10,7 +10,7 @@ import SwiftUI
 struct PegChooser: View {
     
     // MARK: Data In
-    let pegChoiceStatuses: [Peg: Match?]
+    let pegChoiceStatuses: PegChoiceStatuses
     @Environment(\.gameSettings) var gameSettings
     
     // MARK: Data Out Function
@@ -117,5 +117,5 @@ struct PegChooser: View {
 }
 
 #Preview {
-    PegChooser(pegChoiceStatuses: [:], onChoose: {_ in print("Choosing")}, onDelete: {print("Deleting")}, onGuess: {print("Guessing")})
+    PegChooser(pegChoiceStatuses: PegChoiceStatuses(), onChoose: {_ in print("Choosing")}, onDelete: {print("Deleting")}, onGuess: {print("Guessing")})
 }

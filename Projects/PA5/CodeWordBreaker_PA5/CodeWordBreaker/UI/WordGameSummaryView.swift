@@ -46,7 +46,7 @@ struct WordGameSummaryView: View {
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable @State var game : CodeBreaker = CodeBreaker(codeLength: 5)
     game.masterCode.word = "GREAT"
 //    game.guess.word = "THEIR"

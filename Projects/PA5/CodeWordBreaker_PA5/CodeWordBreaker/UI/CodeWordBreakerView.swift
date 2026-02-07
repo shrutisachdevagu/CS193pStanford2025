@@ -127,7 +127,7 @@ struct  CodeWordBreakerView: View {
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     CodeWordBreakerView(game: CodeBreaker(codeLength: 5), onEntry: {print("Entry")}, onExit: {print("Exit")})
 }
 
