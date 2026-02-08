@@ -21,6 +21,7 @@ class CodeBreaker {
     var endTime: Date?
     var elapsedTime: TimeInterval = 0
     var lastAttemptDate: Date? = Date.now
+    var isOver: Bool = false
     
     var attempts: [Code] {
         get { _attempts.sorted {$0.timestamp > $1.timestamp } }
@@ -47,17 +48,13 @@ class CodeBreaker {
         startTime = nil
     }
     
-    
-    var isOver: Bool {
-        attempts.first?.pegs == masterCode.pegs
-    }
-    
     func attemptGuess() {
         guard !attempts.contains(where: { $0.pegs == guess.pegs }) else { return }
         let attempt = Code(kind: .attempt(guess.match(against: masterCode)), pegs: guess.pegs)
         attempts.insert(attempt, at: 0)
         guess.reset()
-        if isOver {
+        if attempts.first?.pegs == masterCode.pegs {
+            isOver = true
             masterCode.kind = .master(isHidden: false)
             endTime = .now
             pauseTimer()
@@ -72,6 +69,7 @@ class CodeBreaker {
         startTime = .now
         endTime = nil
         elapsedTime = 0
+        isOver = false 
     }
     
     func setGuessPeg(_ peg: Peg, at index: Int) {
