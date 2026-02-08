@@ -20,10 +20,20 @@ struct GamesChooser: View {
     @State private var newGame:CodeBreaker = CodeBreaker(codeLength: 5)
     @State private var selection: CodeBreaker? = nil
     @State private var isSettingSheetPresented: Bool = false
+    @State private var sortingOption: GamesList.SortOption = .recent
     
     var body: some View {
         NavigationSplitView {
-            GamesList(selection: $selection)
+            Picker("Sort by", selection: $sortingOption) {
+                ForEach(GamesList.SortOption.allCases, id: \.self) { sorter in
+                    Image(systemName: sorter.titleImage)
+//                        Text(sorter.title)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            
+            GamesList(selection: $selection,sortBy: sortingOption)
                 .navigationTitle("My games")
                 .toolbar {
                     NavigationLink(value: newGame) {
@@ -37,6 +47,15 @@ struct GamesChooser: View {
                             GameSettingsView()
                         }
                 }
+                .navigationDestination(for: CodeBreaker.self) { game in
+                    CodeWordBreakerView(game: game) {
+                        beforeStarting(game: game)
+                        selection = game
+                    } onExit: {
+                        afterSwitchingFrom(game: game)
+                    }
+
+                }
         }
         detail: {
             if let selection {
@@ -49,6 +68,10 @@ struct GamesChooser: View {
                 Text("Create a game")
             }
         }
+        .onChange(of: gameSettings.codeLength) {
+            newGame.restart(codeLength: gameSettings.codeLength)
+        }
+        
     }
     
     func beforeStarting(game: CodeBreaker) {

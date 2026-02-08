@@ -17,11 +17,22 @@ struct GamesList: View {
     @Environment(\.words) var words
     @Environment(\.gameSettings) var gameSettings
     @Query private var allGames:[CodeBreaker]
-
-    
-    // MARK: Data Owned by Me
-    @State private var newGame:CodeBreaker = CodeBreaker(codeLength: 5)
     @Binding var selection: CodeBreaker?
+
+    // MARK: Data Owned by Me
+    @State private var sortBy: SortOption = .recent
+    
+    init(selection: Binding<CodeBreaker?>, sortBy: SortOption = .recent) {
+        _selection = selection
+        switch sortBy {
+        case .recent:
+            _allGames = Query(sort: \CodeBreaker.lastPlayedTime, order: .reverse)
+        case .codelength:
+            _allGames = Query(sort: \CodeBreaker.codeLength)
+        case .reverseCodeLength:
+            _allGames = Query(sort: \CodeBreaker.codeLength, order: .reverse)
+        }
+    }
     
     // MARK: - Body
     
@@ -35,7 +46,6 @@ struct GamesList: View {
                     .contextMenu {
                         Button("Delete", systemImage: "trash.fill") {
                             modelContext.delete(game)
-                            //                                allGames.remove(at: allGames.firstIndex(of: game)!)
                         }
                     }
                 }
@@ -44,16 +54,38 @@ struct GamesList: View {
                 for index in indexSet {
                     modelContext.delete(allGames[index])
                 }
-                //                    allGames.remove(atOffsets: indexSet)
             }
         }
-        .onChange(of: gameSettings.codeLength) {
-            newGame.restart(codeLength: gameSettings.codeLength)
-        }
         .onAppear {
-            //preLoadSampleGames()
             GameSettings.loadGSCodeLengthFromDefaults()
             preLoadSampleGames()
+        }
+    }
+    
+    enum SortOption: CaseIterable {
+        case recent
+        case codelength
+        case reverseCodeLength
+        
+        var title: String {
+            switch self {
+            case .recent:
+                "Recent"
+            case .codelength:
+                "Letters"
+            case .reverseCodeLength:
+                "Letters"
+            }
+        }
+        var titleImage: String {
+            switch self {
+            case .recent:
+                "clock.fill"
+            case .codelength:
+                "chart.bar.xaxis.ascending"
+            case .reverseCodeLength:
+                "chart.bar.xaxis.descending"
+            }
         }
     }
     
@@ -67,14 +99,12 @@ struct GamesList: View {
             game1.attemptGuess()
             game1.guess.word = "FATE"
             game1.attemptGuess()
-            //        allGames.insert(game1, at: 0)
             modelContext.insert(game1)
             let game2 = CodeBreaker(codeLength: 6)
             game2.restart(codeLength: game2.codeLength)
             game2.masterCode.word = words.random(length: game2.codeLength) ?? dummyWord(of: game2.codeLength)
             game2.guess.word = "CLAIMS"
             game2.attemptGuess()
-            //        allGames.insert(game2, at: 0)
             modelContext.insert(game2)
         }
     }
@@ -84,5 +114,7 @@ struct GamesList: View {
 
 #Preview(traits: .swiftData) {
     @Previewable @State var selectedGame :CodeBreaker? = CodeBreaker(codeLength: 5)
-    GamesList(selection: $selectedGame)
+    NavigationStack {
+        GamesList(selection: $selectedGame)
+    }
 }
