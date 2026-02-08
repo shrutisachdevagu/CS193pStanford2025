@@ -50,3 +50,12 @@ extension Animation {
 
 
 
+func dummyWord(of length: Int) -> String {
+    switch length {
+    case 3: return "ATE"
+    case 4: return "FOUR"
+    case 5: return "AWAIT"
+    case 6: return "SANITY"
+    default: return ""
+    }
+}

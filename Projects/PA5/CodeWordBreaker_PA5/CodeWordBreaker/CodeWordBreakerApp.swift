@@ -12,7 +12,7 @@ import SwiftData
 struct CodeWordBreakerApp: App {
     var body: some Scene {
         WindowGroup {
-            AllWordGamesView()
+            GamesChooser()
                 .modelContainer(for: CodeBreaker.self)
         }
     }
