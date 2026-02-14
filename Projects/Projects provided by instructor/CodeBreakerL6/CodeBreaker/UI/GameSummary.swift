@@ -8,22 +8,48 @@
 import SwiftUI
 
 struct GameSummary: View {
+    let size: Size
+    
+    enum Size {
+        case compact
+        case regular
+        case large
+        
+        var larger: Self {
+            switch self {
+            case .compact: .regular
+            default: .large
+            }
+        }
+        
+        var smaller: Self {
+            switch self {
+            case .large: .regular
+            default: .compact
+            }
+        }
+    }
+    
     let game: CodeBreaker
     var body: some View {
-        VStack(alignment: .leading ) {
-            Text(game.name).font(.title)
+        let layout = size == .compact ? AnyLayout(HStackLayout()) : AnyLayout(VStackLayout(alignment: .leading))
+        layout {
+            Text(game.name).font(size == .compact ? .body : .title)
             PegChooser(choices: game.pegChoices)
-                .frame(maxHeight: 50)
-            Text("^[ \(game.attempts.count ) attempt](inflect:true)")
-        }    }
+                .frame(maxHeight: size == .compact ? 35 :50)
+            if size == .large {
+                Text("^[ \(game.attempts.count ) attempt](inflect:true)")
+            }
+        }
+    }
 }
 
 #Preview(traits: .swiftData ) {
     List{
-        GameSummary(game: CodeBreaker(name: "Preview Game", pegChoices: [.red, .cyan, .yellow, .purple]))
+        GameSummary(size: .large, game: CodeBreaker(name: "Preview Game", pegChoices: [.red, .cyan, .yellow, .purple]))
     }
     List{
-        GameSummary(game: CodeBreaker(name: "Preview Game", pegChoices: [.red, .cyan, .yellow, .purple]))
+        GameSummary(size: .compact, game: CodeBreaker(name: "Preview Game", pegChoices: [.red, .cyan, .yellow, .purple]))
     }
     .listStyle(.plain)
 }

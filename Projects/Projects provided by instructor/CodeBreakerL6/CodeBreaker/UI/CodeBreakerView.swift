@@ -10,6 +10,8 @@ import SwiftUI
 struct CodeBreakerView: View {
     // MARK: Data In
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.sceneFrame) var sceneFrame
+
     
     // MARK: Data Shared with me
     let game: CodeBreaker
@@ -45,17 +47,33 @@ struct CodeBreakerView: View {
                     .transition(.attempt(game.isOver))
                 }
             }
-            if !game.isOver {
-                PegChooser(choices: game.pegChoices,onChoose: changePegAtSelection)
-                    .transition(.pegChooser)
-                    .frame(maxHeight: 90)
+            GeometryReader { geometry in
+                if !game.isOver {
+                    let offset = sceneFrame.maxY - geometry.frame(in: .global).minY
+                    PegChooser(choices: game.pegChoices,onChoose: changePegAtSelection)
+                        .transition(.offset(x: 0, y: offset))
+                }
             }
+            .aspectRatio(CGFloat(game.pegChoices.count), contentMode: .fit)
+            .frame(maxHeight: 90)
+            
         }
         .padding()
+        .gesture(pegChoosingDial)
         .trackElapsedTime(in: game)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("Restart", systemImage: "arrow.circlepath", action: restart)
+            }
+            ToolbarItem{
+                Button("Save", systemImage: "square.and.arrow.down") {
+                    // write a JSON of this game out into the documents directory
+                    if let json = try? JSONEncoder().encode(game) {
+                        let url = URL.documentsDirectory.appending(path: game.name).appendingPathExtension("json")
+                        try? json.write(to: url)
+                    }
+                }
+                
             }
             ToolbarItem {
                 ElapsedTime(startTime: game.startTime, endTime: game.endTime, elapsedTime: game.elapsedTime)
@@ -63,6 +81,14 @@ struct CodeBreakerView: View {
                     .lineLimit(1)
             }
         }
+    }
+    
+    var pegChoosingDial: some Gesture {
+        RotateGesture()
+            .onChanged { value in
+                let pegChoiceIndex =  Int(abs(value.rotation.degrees)/90) % game.pegChoices.count
+                game.guess.pegs[selection] = game.pegChoices[pegChoiceIndex]
+            }
     }
     
     func changePegAtSelection(to peg: Peg) {
@@ -106,7 +132,7 @@ extension CodeBreaker {
     }
 }
 #Preview(traits: .swiftData) {
-    @Previewable @State var game = CodeBreaker(name: "Preview", pegChoices: [.red, .purple, .mint, .black])
+    @Previewable @State var game = CodeBreaker(name: "Preview", pegChoices: [.purple, .mint, .black])
     NavigationStack {
         CodeBreakerView(game: game)
     }

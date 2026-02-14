@@ -52,11 +52,19 @@ struct GameList: View {
         }
     }
     
+    var summarySize : GameSummary.Size {
+        staticSummarySize * dynamicSummarySizeMagnification
+    }
+    
+    @State var staticSummarySize: GameSummary.Size = .large
+    
+    @State var dynamicSummarySizeMagnification: CGFloat = 1.0
+    
     var body: some View {
         List(selection: $selection) {
             ForEach(games) { game in
                 NavigationLink(value: game) {
-                    GameSummary(game: game)
+                    GameSummary(size: summarySize, game: game)
                 }
                 .contextMenu {
                     editButton(for: game) // editing a game
@@ -73,6 +81,7 @@ struct GameList: View {
                 }
             }
         }
+        .gesture(summarySizeMagnifier)
         .onChange(of: games) {
             if let selection, !games.contains(selection) {
                 self.selection = nil
@@ -83,8 +92,8 @@ struct GameList: View {
             addButton
             EditButton()  // editing the game list
         }
-        .onAppear {
-            addSampleGames()
+        .task {
+            await addSampleGames()
         }
     }
     
@@ -134,13 +143,47 @@ struct GameList: View {
         }
     }
     
-    func addSampleGames() {
+    func addSampleGames() async {
         
         let fetchDescriptor = FetchDescriptor<CodeBreaker>()
         if let resultsCount = try? modelContext.fetchCount(fetchDescriptor), resultsCount == 0 {
-            modelContext.insert(CodeBreaker(name: "Mastermind", pegChoices: [.red, .blue, .green, .yellow]))
-            modelContext.insert(CodeBreaker(name: "Earth Tones", pegChoices: [.orange, .brown, .black, .yellow, .green]))
-            modelContext.insert(CodeBreaker(name: "Undersea", pegChoices: [.blue, .indigo, .cyan, .yellow]))
+            for url in sampleGameURLs {
+                do {
+                    let (json, _) = try await URLSession.shared.data(from: url)
+                    let game = try JSONDecoder().decode(CodeBreaker.self, from: json)
+                    modelContext.insert(game)
+                    print("Loaded sample game from \(url) ")
+                } catch {
+                    print("Couldnt load sample game from json file at \(url).: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    var sampleGameURLs: [URL] {
+        Bundle.main.paths(forResourcesOfType: "json", inDirectory: nil).map {URL(fileURLWithPath: $0 )}
+    }
+    
+    var summarySizeMagnifier: some Gesture {
+        MagnifyGesture()
+            .onChanged { value in
+                dynamicSummarySizeMagnification = value.magnification
+            }
+            .onEnded { value in
+                staticSummarySize = staticSummarySize * value.magnification
+                dynamicSummarySizeMagnification = 1.0 
+            }
+    }
+}
+
+extension GameSummary.Size {
+    static func * (lhs: Self, rhs: CGFloat) -> Self {
+        switch rhs {
+        case 2.0...: lhs.larger.larger
+        case 1.5...: lhs.larger
+        case ...0.35: lhs.smaller.smaller
+        case ...0.5: lhs.smaller
+        default: lhs
         }
     }
 }
